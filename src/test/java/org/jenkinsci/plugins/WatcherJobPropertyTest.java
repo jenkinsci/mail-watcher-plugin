@@ -5,10 +5,10 @@ import hudson.util.FormValidation;
 
 import org.junit.Test;
 
-public class PropertyTest {
+public class WatcherJobPropertyTest {
 
-    private MailWatcherProperty.DescriptorImpl descriptor =
-            new MailWatcherProperty.DescriptorImpl()
+    private WatcherJobProperty.DescriptorImpl descriptor =
+            new WatcherJobProperty.DescriptorImpl()
    ;
 
     @Test

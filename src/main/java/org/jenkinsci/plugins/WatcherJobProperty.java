@@ -15,12 +15,12 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-public class MailWatcherProperty extends JobProperty<Job<?, ?>> {
+public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
 
     private final String watcherAddresses;
 
     @DataBoundConstructor
-    public MailWatcherProperty(final String watcherAddresses) {
+    public WatcherJobProperty(final String watcherAddresses) {
 
         this.watcherAddresses = watcherAddresses;
     }
@@ -51,7 +51,7 @@ public class MailWatcherProperty extends JobProperty<Job<?, ?>> {
             final String addresses = watcherData.getString( "watcherAddresses" );
             if (addresses == null || addresses.isEmpty()) return null;
 
-            return new MailWatcherProperty(addresses);
+            return new WatcherJobProperty(addresses);
         }
 
         public FormValidation doCheckWatcherAddresses(@QueryParameter String value) {

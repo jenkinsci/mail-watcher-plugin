@@ -15,18 +15,21 @@ public class MailWatcherMailer {
 
     final private Mailer.DescriptorImpl mailerDescriptor = Mailer.descriptor();
 
-    public void send (
-            final String recipients,
-            final String subject,
-            final String body
-    ) throws MessagingException, AddressException {
+    public void send(final MailWatcherAbstractNotifier notifier) throws
+            MessagingException, AddressException
+    {
+
+        if (!notifier.shouldNotify()) return;
 
         final MimeMessage msg = new MimeMessage(mailerDescriptor.createSession());
         msg.setFrom(new InternetAddress(mailerDescriptor.getAdminAddress()));
         msg.setSentDate(new Date());
-        msg.setSubject(subject);
-        msg.setText(body);
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
+        msg.setSubject(notifier.getMailSubject());
+        msg.setText(notifier.getMailBody());
+        msg.setRecipients(
+                Message.RecipientType.TO,
+                InternetAddress.parse(notifier.getRecipients())
+        );
 
         Transport.send(msg);
     }
