@@ -1,8 +1,9 @@
 package org.jenkinsci.plugins;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -24,6 +25,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest( {Item.class, Job.class})
 public class WatcherItemListenerTest {
+
+    private static final String FAKE_JOB_URL = "http://example.com/my-jenkins/fake/job/url";
 
     final private MailWatcherMailer mailer = Mockito.mock(MailWatcherMailer.class);
 
@@ -69,7 +72,7 @@ public class WatcherItemListenerTest {
 
         assertEquals("fake <recipient@list.com>", notifier.getRecipients());
         assertEquals("mail-watcher-plugin: Job newName renamed from oldName", notifier.getMailSubject());
-        assertTrue(notifier.getMailBody().indexOf("http://example.com/my-jenkins/fake/job/url") > 0);
+        assertThat(notifier.getMailBody(), containsString(FAKE_JOB_URL));
     }
 
     @Test
@@ -84,7 +87,7 @@ public class WatcherItemListenerTest {
 
         assertEquals("fake <recipient@list.com>", notifier.getRecipients());
         assertEquals("mail-watcher-plugin: Job updated_job_name updated", notifier.getMailSubject());
-        assertTrue(notifier.getMailBody().indexOf("http://example.com/my-jenkins/fake/job/url") > 0);
+        assertThat(notifier.getMailBody(), containsString(FAKE_JOB_URL));
     }
 
     @Test
@@ -99,7 +102,7 @@ public class WatcherItemListenerTest {
 
         assertEquals("fake <recipient@list.com>", notifier.getRecipients());
         assertEquals("mail-watcher-plugin: Job deleted_job_name deleted", notifier.getMailSubject());
-        assertTrue(notifier.getMailBody().indexOf("http://example.com/my-jenkins/fake/job/url") > 0);
+        assertThat(notifier.getMailBody(), containsString(FAKE_JOB_URL));
     }
 
     @Test

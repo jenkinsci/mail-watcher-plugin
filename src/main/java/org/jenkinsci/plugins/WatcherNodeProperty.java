@@ -1,9 +1,9 @@
 package org.jenkinsci.plugins;
 
 import hudson.Extension;
-import hudson.model.JobProperty;
-import hudson.model.JobPropertyDescriptor;
-import hudson.model.Job;
+import hudson.model.Node;
+import hudson.slaves.NodeProperty;
+import hudson.slaves.NodePropertyDescriptor;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 
@@ -11,12 +11,12 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
+public class WatcherNodeProperty extends NodeProperty<Node> {
 
     private final String watcherAddresses;
 
     @DataBoundConstructor
-    public WatcherJobProperty(final String watcherAddresses) {
+    public WatcherNodeProperty(final String watcherAddresses) {
 
         this.watcherAddresses = watcherAddresses;
     }
@@ -27,27 +27,24 @@ public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
     }
 
     @Extension
-    public static class DescriptorImpl extends JobPropertyDescriptor {
+    public static class DescriptorImpl extends NodePropertyDescriptor {
 
         @Override
-        public boolean isApplicable(Class<? extends Job> jobType) {
+        public boolean isApplicable(Class<? extends Node> nodeType) {
 
             return true;
         }
 
         @Override
-        public JobProperty<?> newInstance(
+        public NodeProperty<?> newInstance(
                 final StaplerRequest req,
                 final JSONObject formData
         ) throws FormException {
 
-            final JSONObject watcherData = formData.getJSONObject("watcherEnabled");
-            if (watcherData.isNullObject()) return null;
-
-            final String addresses = watcherData.getString( "watcherAddresses" );
+            final String addresses = formData.getString( "watcherAddresses" );
             if (addresses == null || addresses.isEmpty()) return null;
 
-            return new WatcherJobProperty(addresses);
+            return new WatcherNodeProperty(addresses);
         }
 
         public FormValidation doCheckWatcherAddresses(@QueryParameter String value) {
@@ -58,7 +55,7 @@ public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
         @Override
         public String getDisplayName() {
 
-            return "Notify when Job configuration changes";
+            return "Notify when Node online status changes";
         }
     }
 }

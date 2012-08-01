@@ -24,10 +24,7 @@ THE SOFTWARE.
 
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <f:optionalBlock name="watcherEnabled"
-            title="${descriptor.displayName}" checked="${instance!=null}">
-        <f:entry field="watcherAddresses" title="${%Notification addresses}">
-            <f:textbox/>
-        </f:entry>
-    </f:optionalBlock>
+    <f:entry field="watcherAddresses" title="${%Notification addresses}">
+        <f:textbox/>
+    </f:entry>
 </j:jelly>
