@@ -1,3 +1,26 @@
+/*
+ * The MIT License
+ *
+ * Copyright (c) 2012 Red Hat, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package org.jenkinsci.plugins;
 
 import static org.hamcrest.Matchers.containsString;
@@ -49,10 +72,10 @@ public class WatcherItemListenerTest {
         return jobStub;
     }
 
-    private MailWatcherAbstractNotifier captureNotifier() throws AddressException, MessagingException {
+    private MailWatcherAbstractNotification captureNotification() throws AddressException, MessagingException {
 
-        ArgumentCaptor<MailWatcherAbstractNotifier> argument = ArgumentCaptor
-                .forClass(MailWatcherAbstractNotifier.class)
+        ArgumentCaptor<MailWatcherAbstractNotification> argument = ArgumentCaptor
+                .forClass(MailWatcherAbstractNotification.class)
         ;
 
         verify(mailer).send(argument.capture());
@@ -68,11 +91,11 @@ public class WatcherItemListenerTest {
 
         listener.onRenamed(jobStub, "oldName", "newName");
 
-        final MailWatcherAbstractNotifier notifier = captureNotifier();
+        final MailWatcherAbstractNotification notification = captureNotification();
 
-        assertEquals("fake <recipient@list.com>", notifier.getRecipients());
-        assertEquals("mail-watcher-plugin: Job newName renamed from oldName", notifier.getMailSubject());
-        assertThat(notifier.getMailBody(), containsString(FAKE_JOB_URL));
+        assertEquals("fake <recipient@list.com>", notification.getRecipients());
+        assertEquals("mail-watcher-plugin: Job newName renamed from oldName", notification.getMailSubject());
+        assertThat(notification.getMailBody(), containsString(FAKE_JOB_URL));
     }
 
     @Test
@@ -83,11 +106,11 @@ public class WatcherItemListenerTest {
 
         listener.onUpdated(jobStub);
 
-        final MailWatcherAbstractNotifier notifier = captureNotifier();
+        final MailWatcherAbstractNotification notification = captureNotification();
 
-        assertEquals("fake <recipient@list.com>", notifier.getRecipients());
-        assertEquals("mail-watcher-plugin: Job updated_job_name updated", notifier.getMailSubject());
-        assertThat(notifier.getMailBody(), containsString(FAKE_JOB_URL));
+        assertEquals("fake <recipient@list.com>", notification.getRecipients());
+        assertEquals("mail-watcher-plugin: Job updated_job_name updated", notification.getMailSubject());
+        assertThat(notification.getMailBody(), containsString(FAKE_JOB_URL));
     }
 
     @Test
@@ -98,11 +121,11 @@ public class WatcherItemListenerTest {
 
         listener.onDeleted(jobStub);
 
-        final MailWatcherAbstractNotifier notifier = captureNotifier();
+        final MailWatcherAbstractNotification notification = captureNotification();
 
-        assertEquals("fake <recipient@list.com>", notifier.getRecipients());
-        assertEquals("mail-watcher-plugin: Job deleted_job_name deleted", notifier.getMailSubject());
-        assertThat(notifier.getMailBody(), containsString(FAKE_JOB_URL));
+        assertEquals("fake <recipient@list.com>", notification.getRecipients());
+        assertEquals("mail-watcher-plugin: Job deleted_job_name deleted", notification.getMailSubject());
+        assertThat(notification.getMailBody(), containsString(FAKE_JOB_URL));
     }
 
     @Test
@@ -115,7 +138,7 @@ public class WatcherItemListenerTest {
         listener.onDeleted(itemStub);
 
         verify(mailer, never ())
-                .send(any(MailWatcherAbstractNotifier.class))
+                .send(any(MailWatcherAbstractNotification.class))
         ;
     }
 
@@ -129,7 +152,7 @@ public class WatcherItemListenerTest {
         ;
 
         listener.onDeleted(jobStub);
-        assertFalse(captureNotifier().shouldNotify());
+        assertFalse(captureNotification().shouldNotify());
     }
 
     @Test
@@ -142,7 +165,7 @@ public class WatcherItemListenerTest {
         ;
 
         listener.onRenamed(jobStub, "oldName", "newName");
-        assertFalse(captureNotifier().shouldNotify());
+        assertFalse(captureNotification().shouldNotify());
     }
 
     @Test
@@ -155,6 +178,6 @@ public class WatcherItemListenerTest {
         ;
 
         listener.onUpdated(jobStub);
-        assertFalse(captureNotifier().shouldNotify());
+        assertFalse(captureNotification().shouldNotify());
     }
 }
