@@ -11,6 +11,18 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
+  <developers>
+    <developer>
+      <id>olivergondza</id>
+      <name>Oliver Gondža</name>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/jenkinsci/mail-watcher-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/mail-watcher-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/mail-watcher-plugin</url>
+  </scm>
+
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
   <repositories>
     <repository>
