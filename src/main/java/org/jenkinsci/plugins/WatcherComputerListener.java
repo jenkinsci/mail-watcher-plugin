@@ -66,113 +66,121 @@ public class WatcherComputerListener extends ComputerListener {
         );
 
         this.mailer = mailer;
-        this.jenkinsRootUrl = jenkinsRootUrl == null
-                ? "/"
-                : jenkinsRootUrl
-        ;
+        this.jenkinsRootUrl = jenkinsRootUrl;
     }
 
     public void onOffline(final Computer c) {
 
-        notify(c, "marked offline", "");
+        getNotification().online(false)
+                .subject("marked offline")
+                .send(c)
+        ;
     }
 
     public void onOnline(final Computer c, final TaskListener listener) {
 
-        notify(c, "marked online", "");
+        getNotification().online(true)
+                .subject("marked online")
+                .send(c)
+        ;
     }
 
     public void onTemporarilyOffline(final Computer c, final OfflineCause cause) {
 
-        notify(c, "marked temporarily offline", cause.toString());
+        getNotification().online(false)
+                .subject("marked temporarily offline")
+                .body(cause.toString())
+                .send(c)
+        ;
     }
 
     public void onTemporarilyOnline(final Computer c) {
 
-        notify(c, "marked temporarily online", "");
+        getNotification().online(true)
+                .subject("marked temporarily online")
+                .send(c)
+        ;
     }
 
-    private void notify (
-            final Computer computer, final String subject, final String body
-    ) {
+    private Notification.Builder getNotification() {
 
-        new Notification(jenkinsRootUrl, computer, subject, body).notify(mailer);
+        return new Notification.Builder(mailer, jenkinsRootUrl);
     }
 
-    public static class Notification extends MailWatcherAbstractNotification {
+    private static class Notification extends MailWatcherNotification {
 
-        final Computer computer;
-        final String subject;
-        final String body;
+        public Notification(final Builder builder) {
 
-        final WatcherNodeProperty property;
-
-        public Notification(
-                final String jenkinsRootUrl,
-                final Computer computer,
-                final String subject,
-                final String body
-        ) {
-
-            super(jenkinsRootUrl);
-
-            this.computer = computer;
-            this.subject = subject;
-            this.body = body;
-
-            this.property = getWatcherNodeProperty(computer);
-        }
-
-        private WatcherNodeProperty getWatcherNodeProperty(final Computer computer) {
-
-            final Node node = computer.getNode();
-            if (node==null) return null;
-
-            final DescribableList<NodeProperty<?>, NodePropertyDescriptor> properties =
-                    node.getNodeProperties()
-            ;
-
-            if (properties == null) return null;
-
-            for(NodeProperty<?> property: properties) {
-
-                if (property instanceof WatcherNodeProperty) {
-
-                    return (WatcherNodeProperty) property;
-                }
-            }
-
-            return null;
-        }
-
-        @Override
-        public String getUrl() {
-
-            return computer.getUrl();
+            super(builder);
         }
 
         @Override
         protected String getSubject() {
 
-            return String.format("Computer %s %s", computer.getName(), subject);
+            return String.format("Computer %s %s", getName(), super.getSubject());
         }
 
-        @Override
-        protected String getBody() {
+        private static class Builder extends MailWatcherNotification.Builder {
 
-            return body;
-        }
+            private boolean online;
 
-        @Override
-        public String getRecipients() {
+            public Builder(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
 
-            return property.getWatcherAddresses();
-        }
+                super(mailer, jenkinsRootUrl);
+            }
 
-        @Override
-        protected boolean shouldNotify() {
+            public Builder online(final boolean online) {
 
-            return property != null;
+                this.online = online;
+                return this;
+            }
+
+            @Override
+            public void send(final Object o) {
+
+                final Computer computer = (Computer) o;
+
+                final WatcherNodeProperty property = getWatcherNodeProperty(computer);
+
+                if (property!=null) {
+
+                    final String recipients = this.online
+                            ? property.getOnlineAddresses()
+                            : property.getOfflineAddresses()
+                    ;
+                    this.recipients(recipients);
+                }
+
+                this.url(computer.getUrl())
+                    .name(computer.getDisplayName())
+                ;
+
+                new Notification(this).send();
+            }
+
+            private static WatcherNodeProperty getWatcherNodeProperty(
+                    final Computer computer
+            ) {
+
+                final Node node = computer.getNode();
+                if (node==null) return null;
+
+                final DescribableList<NodeProperty<?>, NodePropertyDescriptor> properties =
+                        node.getNodeProperties()
+                ;
+
+                if (properties == null) return null;
+
+                for(NodeProperty<?> property: properties) {
+
+                    if (property instanceof WatcherNodeProperty) {
+
+                        return (WatcherNodeProperty) property;
+                    }
+                }
+
+                return null;
+            }
         }
     }
 }

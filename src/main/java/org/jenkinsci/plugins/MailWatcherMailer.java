@@ -44,7 +44,7 @@ public class MailWatcherMailer {
 
     final private Mailer.DescriptorImpl mailerDescriptor = Mailer.descriptor();
 
-    public void send(final MailWatcherAbstractNotification notification) throws
+    public void send(final MailWatcherNotification notification) throws
             MessagingException, AddressException
     {
 

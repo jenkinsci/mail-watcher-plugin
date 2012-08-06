@@ -34,28 +34,63 @@ import javax.mail.internet.AddressException;
  *
  * @author ogondza
  */
-public abstract class MailWatcherAbstractNotification {
+public abstract class MailWatcherNotification {
 
     private final static Logger LOGGER = Logger.getLogger(
-            MailWatcherAbstractNotification.class.getName()
+            MailWatcherNotification.class.getName()
     );
 
     private static final String MAIL_WATCHER_PLUGIN = "mail-watcher-plugin: ";
-    private final String jenkinsRootUrl;
 
-    public MailWatcherAbstractNotification(final String jenkinsRootUrl) {
+    final private String subject;
+    final private String body;
+    final private String recipients;
 
-        this.jenkinsRootUrl = jenkinsRootUrl == null
-                ? "/"
-                : jenkinsRootUrl
-        ;
+    final private String url;
+    final private String name;
+
+    final private String jenkinsRootUrl;
+
+    final private MailWatcherMailer mailer;
+
+    public MailWatcherNotification(final Builder builder) {
+
+        this.subject = builder.subject;
+        this.body = builder.body;
+        this.recipients = builder.recipients;
+
+        this.url = builder.url;
+        this.name = builder.name;
+
+        this.jenkinsRootUrl = builder.jenkinsRootUrl;
+
+        this.mailer = builder.mailer;
     }
 
-    protected abstract String getSubject();
-    protected abstract String getBody();
+    protected String getSubject() {
 
-    public abstract String getUrl();
-    public abstract String getRecipients();
+        return subject;
+    }
+
+    protected String getBody() {
+
+        return body;
+    }
+
+    public String getRecipients() {
+
+        return recipients;
+    }
+
+    public String getUrl() {
+
+        return url;
+    }
+
+    public String getName() {
+
+        return name;
+    }
 
     private String getArtefactUrl() {
 
@@ -64,7 +99,7 @@ public abstract class MailWatcherAbstractNotification {
 
     protected boolean shouldNotify() {
 
-        return true;
+        return recipients != null;
     }
 
     public final String getMailSubject() {
@@ -77,7 +112,7 @@ public abstract class MailWatcherAbstractNotification {
         return this.getBody() + "\n\nUrl: " + this.getArtefactUrl();
     }
 
-    public final void notify(final MailWatcherMailer mailer) {
+    public final void send() {
 
         try {
 
@@ -104,5 +139,60 @@ public abstract class MailWatcherAbstractNotification {
     private void log(String state, Throwable ex) {
 
         LOGGER.log(Level.INFO, state, ex);
+    }
+
+    public static abstract class Builder {
+
+        final private MailWatcherMailer mailer;
+        final private String jenkinsRootUrl;
+
+        private String subject = "";
+        private String body = "";
+        private String recipients;
+
+        private String url = "";
+        private String name = "";
+
+        public Builder(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
+
+            this.mailer = mailer;
+
+            this.jenkinsRootUrl = jenkinsRootUrl == null
+                    ? "/"
+                    : jenkinsRootUrl
+            ;
+        }
+
+        public Builder subject(final String subject) {
+
+            this.subject = subject;
+            return this;
+        }
+
+        public Builder body(final String body) {
+
+            this.body = body;
+            return this;
+        }
+
+        public Builder recipients(final String recipients) {
+
+            this.recipients = recipients;
+            return this;
+        }
+
+        protected Builder url(final String url) {
+
+            this.url = url;
+            return this;
+        }
+
+        protected Builder name(final String name) {
+
+            this.name = name;
+            return this;
+        }
+
+        abstract public void send(final Object object);
     }
 }

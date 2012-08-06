@@ -39,25 +39,50 @@ public class WatcherNodePropertyTest {
 
         assertEquals(
                 FormValidation.ok(),
-                descriptor.doCheckWatcherAddresses("an address <an.address@mail.com>")
+                descriptor.doCheckOnlineAddresses("an address <an.address@mail.com>")
+        );
+
+        assertEquals(
+                FormValidation.ok(),
+                descriptor.doCheckOfflineAddresses("an address <an.address@mail.com>")
         );
     }
 
     @Test
     public void noAddressProvided() {
 
+        final String expected = FormValidation
+                .error("Empty address list provided")
+                .toString()
+        ;
+
         assertEquals(
-                FormValidation.error("Empty address list provided").toString(),
-                descriptor.doCheckWatcherAddresses("").toString()
+                expected,
+                descriptor.doCheckOnlineAddresses("").toString()
+        );
+
+        assertEquals(
+                expected,
+                descriptor.doCheckOfflineAddresses("").toString()
         );
     }
 
     @Test
     public void invalidAddressProvided() {
 
+        final String expected = FormValidation
+                .error("not.an.address does not look like an email address")
+                .toString()
+        ;
+
         assertEquals(
-                FormValidation.error("not.an.address does not look like an email address").toString(),
-                descriptor.doCheckWatcherAddresses("not.an.address").toString()
+                expected,
+                descriptor.doCheckOnlineAddresses("not.an.address").toString()
+        );
+
+        assertEquals(
+                expected,
+                descriptor.doCheckOfflineAddresses("not.an.address").toString()
         );
     }
 
@@ -69,7 +94,12 @@ public class WatcherNodePropertyTest {
 
         assertEquals(
                 FormValidation.error(expectedMessage).toString(),
-                descriptor.doCheckWatcherAddresses(addressCandidate).toString()
+                descriptor.doCheckOnlineAddresses(addressCandidate).toString()
+        );
+
+        assertEquals(
+                FormValidation.error(expectedMessage).toString(),
+                descriptor.doCheckOfflineAddresses(addressCandidate).toString()
         );
     }
 }

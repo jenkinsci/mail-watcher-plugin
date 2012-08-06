@@ -42,17 +42,26 @@ import org.kohsuke.stapler.StaplerRequest;
  */
 public class WatcherNodeProperty extends NodeProperty<Node> {
 
-    private final String watcherAddresses;
+    private final String onlineAddresses;
+    private final String offlineAddresses;
 
     @DataBoundConstructor
-    public WatcherNodeProperty(final String watcherAddresses) {
+    public WatcherNodeProperty(
+            final String onlineAddresses, final String offlineAddresses
+    ) {
 
-        this.watcherAddresses = watcherAddresses;
+        this.onlineAddresses = onlineAddresses;
+        this.offlineAddresses = offlineAddresses;
     }
 
-    public String getWatcherAddresses() {
+    public String getOnlineAddresses() {
 
-        return watcherAddresses;
+        return onlineAddresses;
+    }
+
+    public String getOfflineAddresses() {
+
+        return offlineAddresses;
     }
 
     @Extension
@@ -70,13 +79,21 @@ public class WatcherNodeProperty extends NodeProperty<Node> {
                 final JSONObject formData
         ) throws FormException {
 
-            final String addresses = formData.getString( "watcherAddresses" );
-            if (addresses == null || addresses.isEmpty()) return null;
+            final String onlineAddresses = formData.getString( "onlineAddresses" );
+            if (onlineAddresses == null || onlineAddresses.isEmpty()) return null;
 
-            return new WatcherNodeProperty(addresses);
+            final String offlineAddresses = formData.getString( "offlineAddresses" );
+            if (offlineAddresses == null || offlineAddresses.isEmpty()) return null;
+
+            return new WatcherNodeProperty(onlineAddresses, offlineAddresses);
         }
 
-        public FormValidation doCheckWatcherAddresses(@QueryParameter String value) {
+        public FormValidation doCheckOnlineAddresses(@QueryParameter String value) {
+
+            return MailWatcherMailer.validateMailAddresses(value);
+        }
+
+        public FormValidation doCheckOfflineAddresses(@QueryParameter String value) {
 
             return MailWatcherMailer.validateMailAddresses(value);
         }

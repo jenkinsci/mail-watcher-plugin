@@ -61,10 +61,7 @@ public class WatcherItemListener extends ItemListener {
         );
 
         this.mailer = mailer;
-        this.jenkinsRootUrl = jenkinsRootUrl == null
-                ? "/"
-                : jenkinsRootUrl
-        ;
+        this.jenkinsRootUrl = jenkinsRootUrl;
     }
 
     @Override
@@ -74,9 +71,7 @@ public class WatcherItemListener extends ItemListener {
 
         final Job<?, ?> job = (Job<?, ?>) item;
 
-        assert newName.equals(item.getName()): "Renamed item is supposed to have new name set";
-
-        notify(job, "renamed from " + oldName, "");
+        getNotification().subject("renamed from " + oldName).send(job);
     }
 
     @Override
@@ -84,7 +79,7 @@ public class WatcherItemListener extends ItemListener {
 
         if ( !(item instanceof Job<?, ?>) ) return;
 
-        notify((Job<?, ?>) item, "updated", "");
+        getNotification().subject("updated").send(item);
     }
 
     @Override
@@ -92,68 +87,54 @@ public class WatcherItemListener extends ItemListener {
 
         if ( !(item instanceof Job<?, ?>) ) return;
 
-        notify((Job<?, ?>) item, "deleted", "");
+        getNotification().subject("deleted").send(item);
     }
 
-    private void notify(
-            final Job<?, ?> job, final String subject, final String body
-    ) {
+    private Notification.Builder getNotification() {
 
-        new Notification(jenkinsRootUrl, job, subject, body).notify(mailer);
+        return new Notification.Builder(mailer, jenkinsRootUrl);
     }
 
-    public static class Notification extends MailWatcherAbstractNotification {
+    private static class Notification extends MailWatcherNotification {
 
-        final Job<?, ?> job;
-        final String subject;
-        final String body;
+        public Notification(final Builder builder) {
 
-        final WatcherJobProperty property;
-
-        public Notification(
-                final String jenkinsRootUrl,
-                final Job<?, ?> job,
-                final String subject,
-                final String body
-        ) {
-
-            super(jenkinsRootUrl);
-
-            this.job = job;
-            this.subject = subject;
-            this.body = body;
-
-            this.property = job.getProperty(WatcherJobProperty.class);
-        }
-
-        @Override
-        public String getUrl() {
-
-            return job.getShortUrl();
+            super(builder);
         }
 
         @Override
         protected String getSubject() {
 
-            return String.format("Job %s %s", job.getName (), subject);
+            return String.format("Job %s %s", getName (), super.getSubject());
         }
 
-        @Override
-        protected String getBody() {
+        private static class Builder extends MailWatcherNotification.Builder {
 
-            return body;
-        }
+            public Builder(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
 
-        @Override
-        public String getRecipients() {
+                super(mailer, jenkinsRootUrl);
+            }
 
-            return property.getWatcherAddresses();
-        }
+            @Override
+            public void send(final Object o) {
 
-        @Override
-        protected boolean shouldNotify() {
+                final Job<?, ?> job = (Job<?, ?>) o;
 
-            return property != null;
+                final WatcherJobProperty property = job.getProperty(
+                        WatcherJobProperty.class
+                );
+
+                if (property!=null) {
+
+                    this.recipients(property.getWatcherAddresses());
+                }
+
+                this.url(job.getShortUrl())
+                    .name(job.getName())
+                ;
+
+                new Notification(this).send();
+            }
         }
     }
 }

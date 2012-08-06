@@ -27,6 +27,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -72,10 +73,10 @@ public class WatcherItemListenerTest {
         return jobStub;
     }
 
-    private MailWatcherAbstractNotification captureNotification() throws AddressException, MessagingException {
+    private MailWatcherNotification captureNotification() throws AddressException, MessagingException {
 
-        ArgumentCaptor<MailWatcherAbstractNotification> argument = ArgumentCaptor
-                .forClass(MailWatcherAbstractNotification.class)
+        ArgumentCaptor<MailWatcherNotification> argument = ArgumentCaptor
+                .forClass(MailWatcherNotification.class)
         ;
 
         verify(mailer).send(argument.capture());
@@ -91,11 +92,13 @@ public class WatcherItemListenerTest {
 
         listener.onRenamed(jobStub, "oldName", "newName");
 
-        final MailWatcherAbstractNotification notification = captureNotification();
+        final MailWatcherNotification notification = captureNotification();
 
         assertEquals("fake <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Job newName renamed from oldName", notification.getMailSubject());
         assertThat(notification.getMailBody(), containsString(FAKE_JOB_URL));
+
+        assertTrue(notification.shouldNotify());
     }
 
     @Test
@@ -106,11 +109,13 @@ public class WatcherItemListenerTest {
 
         listener.onUpdated(jobStub);
 
-        final MailWatcherAbstractNotification notification = captureNotification();
+        final MailWatcherNotification notification = captureNotification();
 
         assertEquals("fake <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Job updated_job_name updated", notification.getMailSubject());
         assertThat(notification.getMailBody(), containsString(FAKE_JOB_URL));
+
+        assertTrue(notification.shouldNotify());
     }
 
     @Test
@@ -121,11 +126,13 @@ public class WatcherItemListenerTest {
 
         listener.onDeleted(jobStub);
 
-        final MailWatcherAbstractNotification notification = captureNotification();
+        final MailWatcherNotification notification = captureNotification();
 
         assertEquals("fake <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Job deleted_job_name deleted", notification.getMailSubject());
         assertThat(notification.getMailBody(), containsString(FAKE_JOB_URL));
+
+        assertTrue(notification.shouldNotify());
     }
 
     @Test
@@ -138,7 +145,7 @@ public class WatcherItemListenerTest {
         listener.onDeleted(itemStub);
 
         verify(mailer, never ())
-                .send(any(MailWatcherAbstractNotification.class))
+                .send(any(MailWatcherNotification.class))
         ;
     }
 
