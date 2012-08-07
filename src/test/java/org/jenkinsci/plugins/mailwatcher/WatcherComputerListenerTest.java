@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins;
+package org.jenkinsci.plugins.mailwatcher;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;

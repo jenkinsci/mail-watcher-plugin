@@ -21,11 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins;
+package org.jenkinsci.plugins.mailwatcher;
 
 import static org.junit.Assert.assertEquals;
 import hudson.util.FormValidation;
 
+import org.jenkinsci.plugins.mailwatcher.WatcherNodeProperty;
 import org.junit.Test;
 
 public class WatcherNodePropertyTest {

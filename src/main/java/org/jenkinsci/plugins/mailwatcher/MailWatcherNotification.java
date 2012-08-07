@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins;
+package org.jenkinsci.plugins.mailwatcher;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

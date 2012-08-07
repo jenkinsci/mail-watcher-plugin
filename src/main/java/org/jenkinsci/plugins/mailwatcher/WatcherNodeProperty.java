@@ -21,12 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins;
+package org.jenkinsci.plugins.mailwatcher;
 
 import hudson.Extension;
-import hudson.model.JobProperty;
-import hudson.model.JobPropertyDescriptor;
-import hudson.model.Job;
+import hudson.model.Node;
+import hudson.slaves.NodeProperty;
+import hudson.slaves.NodePropertyDescriptor;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 
@@ -35,51 +35,65 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * Configure list of email addresses as a property of a Job to be used for
+ * Configure list of email addresses as a property of a Node to be used for
  * notification purposes.
  *
  * @author ogondza
  */
-public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
+public class WatcherNodeProperty extends NodeProperty<Node> {
 
-    private final String watcherAddresses;
+    private final String onlineAddresses;
+    private final String offlineAddresses;
 
     @DataBoundConstructor
-    public WatcherJobProperty(final String watcherAddresses) {
+    public WatcherNodeProperty(
+            final String onlineAddresses, final String offlineAddresses
+    ) {
 
-        this.watcherAddresses = watcherAddresses;
+        this.onlineAddresses = onlineAddresses;
+        this.offlineAddresses = offlineAddresses;
     }
 
-    public String getWatcherAddresses() {
+    public String getOnlineAddresses() {
 
-        return watcherAddresses;
+        return onlineAddresses;
+    }
+
+    public String getOfflineAddresses() {
+
+        return offlineAddresses;
     }
 
     @Extension
-    public static class DescriptorImpl extends JobPropertyDescriptor {
+    public static class DescriptorImpl extends NodePropertyDescriptor {
 
         @Override
-        public boolean isApplicable(Class<? extends Job> jobType) {
+        public boolean isApplicable(Class<? extends Node> nodeType) {
 
             return true;
         }
 
         @Override
-        public JobProperty<?> newInstance(
+        public NodeProperty<?> newInstance(
                 final StaplerRequest req,
                 final JSONObject formData
         ) throws FormException {
 
-            final JSONObject watcherData = formData.getJSONObject("watcherEnabled");
-            if (watcherData.isNullObject()) return null;
+            final String onlineAddresses = formData.getString( "onlineAddresses" );
+            if (onlineAddresses == null || onlineAddresses.isEmpty()) return null;
 
-            final String addresses = watcherData.getString( "watcherAddresses" );
-            if (addresses == null || addresses.isEmpty()) return null;
+            final String offlineAddresses = formData.getString( "offlineAddresses" );
+            if (offlineAddresses == null || offlineAddresses.isEmpty()) return null;
 
-            return new WatcherJobProperty(addresses);
+            return new WatcherNodeProperty(onlineAddresses, offlineAddresses);
         }
 
-        public FormValidation doCheckWatcherAddresses(@QueryParameter String value) {
+        public FormValidation doCheckOnlineAddresses(@QueryParameter String value) {
+
+            return MailWatcherMailer.validateMailAddresses(value);
+        }
+
+        public FormValidation doCheckOfflineAddresses(@QueryParameter String value) {
 
             return MailWatcherMailer.validateMailAddresses(value);
         }
@@ -87,7 +101,7 @@ public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
         @Override
         public String getDisplayName() {
 
-            return "Notify when Job configuration changes";
+            return "Notify when Node online status changes";
         }
     }
 }

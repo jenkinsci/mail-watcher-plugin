@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins;
+package org.jenkinsci.plugins.mailwatcher;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
@@ -38,6 +38,10 @@ import hudson.model.Job;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.jenkinsci.plugins.mailwatcher.MailWatcherMailer;
+import org.jenkinsci.plugins.mailwatcher.MailWatcherNotification;
+import org.jenkinsci.plugins.mailwatcher.WatcherItemListener;
+import org.jenkinsci.plugins.mailwatcher.WatcherJobProperty;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
