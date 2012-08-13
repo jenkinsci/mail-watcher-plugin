@@ -10,6 +10,10 @@
   <artifactId>mail-watcher-plugin</artifactId>
   <version>1.3-SNAPSHOT</version>
   <packaging>hpi</packaging>
+  <name>Mail Watcher Plugin for Jenkins-ci</name>
+  <description>This plugin notifies configured email recipients on various
+  events.</description>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Mail+Watcher+Plugin</url>
 
   <developers>
     <developer>

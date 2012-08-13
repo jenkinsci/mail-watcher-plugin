@@ -26,7 +26,6 @@ package org.jenkinsci.plugins.mailwatcher;
 import static org.junit.Assert.assertEquals;
 import hudson.util.FormValidation;
 
-import org.jenkinsci.plugins.mailwatcher.WatcherNodeProperty;
 import org.junit.Test;
 
 public class WatcherNodePropertyTest {

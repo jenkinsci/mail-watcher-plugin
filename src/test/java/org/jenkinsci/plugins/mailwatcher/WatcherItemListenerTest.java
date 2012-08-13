@@ -38,10 +38,6 @@ import hudson.model.Job;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
-import org.jenkinsci.plugins.mailwatcher.MailWatcherMailer;
-import org.jenkinsci.plugins.mailwatcher.MailWatcherNotification;
-import org.jenkinsci.plugins.mailwatcher.WatcherItemListener;
-import org.jenkinsci.plugins.mailwatcher.WatcherJobProperty;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
