@@ -44,23 +44,33 @@ public class MailWatcherMailer {
 
     final private Mailer.DescriptorImpl mailerDescriptor = Mailer.descriptor();
 
-    public void send(final MailWatcherNotification notification) throws
+    /**
+     * Send the notification
+     *
+     * @return sent MimeMessage or null if notification was not sent
+     */
+    public MimeMessage send(final MailWatcherNotification notification) throws
             MessagingException, AddressException
     {
 
-        if (!notification.shouldNotify()) return;
+        if (!notification.shouldNotify()) return null;
+
+        final InternetAddress[] recipients = InternetAddress.parse(
+                notification.getRecipients()
+        );
+
+        if (recipients.length == 0) return null;
 
         final MimeMessage msg = new MimeMessage(mailerDescriptor.createSession());
         msg.setFrom(new InternetAddress(mailerDescriptor.getAdminAddress()));
         msg.setSentDate(new Date());
         msg.setSubject(notification.getMailSubject());
         msg.setText(notification.getMailBody());
-        msg.setRecipients(
-                Message.RecipientType.TO,
-                InternetAddress.parse(notification.getRecipients())
-        );
+        msg.setRecipients(Message.RecipientType.TO, recipients);
 
         Transport.send(msg);
+
+        return msg;
     }
 
     /**

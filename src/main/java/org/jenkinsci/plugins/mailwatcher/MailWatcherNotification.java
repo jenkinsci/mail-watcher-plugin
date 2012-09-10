@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import javax.mail.internet.MimeMessage;
 
 /**
  * Abstract notification for Jenkins.
@@ -116,19 +117,18 @@ public abstract class MailWatcherNotification {
 
         try {
 
-            mailer.send(this);
+            final MimeMessage msg = mailer.send(this);
+            if (msg != null) {
 
-        } catch ( AddressException ex ) {
+                log(MAIL_WATCHER_PLUGIN + "notified: " + this.getSubject());
+            }
+        } catch (AddressException ex) {
 
             log(MAIL_WATCHER_PLUGIN + "unable to parse address", ex);
-            return;
-        } catch ( MessagingException ex ) {
+        } catch (MessagingException ex) {
 
             log(MAIL_WATCHER_PLUGIN + "unable to notify", ex);
-            return;
         }
-
-        log(MAIL_WATCHER_PLUGIN + "notified: " + this.getSubject());
     }
 
     private void log(String state) {
