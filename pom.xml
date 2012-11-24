@@ -10,15 +10,15 @@
   <artifactId>mail-watcher-plugin</artifactId>
   <version>1.4-SNAPSHOT</version>
   <packaging>hpi</packaging>
-  <name>Mail Watcher Plugin for Jenkins-ci</name>
-  <description>This plugin notifies configured email recipients on various
-  events.</description>
+  <name>Mail Watcher Plugin</name>
+  <description>This plugin notifies configured email recipients on various events.</description>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Mail+Watcher+Plugin</url>
 
   <developers>
     <developer>
       <id>olivergondza</id>
       <name>Oliver Gondža</name>
+      <email>ogondza@redhat.org</email>
     </developer>
   </developers>
   <scm>
@@ -27,7 +27,6 @@
     <url>https://github.com/jenkinsci/mail-watcher-plugin</url>
   </scm>
 
-  <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
   <repositories>
     <repository>
       <id>repo.jenkins-ci.org</id>
@@ -41,7 +40,11 @@
       <url>http://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
-  
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.mockito</groupId>
