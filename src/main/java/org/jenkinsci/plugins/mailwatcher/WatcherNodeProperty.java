@@ -67,6 +67,9 @@ public class WatcherNodeProperty extends NodeProperty<Node> {
     @Extension
     public static class DescriptorImpl extends NodePropertyDescriptor {
 
+        public static final String OFFLINE_ADDRESSES = "offlineAddresses";
+        public static final String ONLINE_ADDRESSES = "onlineAddresses";
+
         @Override
         public boolean isApplicable(Class<? extends Node> nodeType) {
 
@@ -79,11 +82,13 @@ public class WatcherNodeProperty extends NodeProperty<Node> {
                 final JSONObject formData
         ) throws FormException {
 
-            final String onlineAddresses = formData.getString( "onlineAddresses" );
-            if (onlineAddresses == null || onlineAddresses.isEmpty()) return null;
+            final String onlineAddresses = formData.getString(ONLINE_ADDRESSES);
+            final String offlineAddresses = formData.getString(OFFLINE_ADDRESSES);
 
-            final String offlineAddresses = formData.getString( "offlineAddresses" );
-            if (offlineAddresses == null || offlineAddresses.isEmpty()) return null;
+            assert onlineAddresses != null;
+            assert offlineAddresses != null;
+
+            if (onlineAddresses.isEmpty() && offlineAddresses.isEmpty()) return null;
 
             return new WatcherNodeProperty(onlineAddresses, offlineAddresses);
         }

@@ -24,12 +24,16 @@
 package org.jenkinsci.plugins.mailwatcher;
 
 import static org.junit.Assert.assertEquals;
+import hudson.model.Descriptor.FormException;
 import hudson.util.FormValidation;
+import net.sf.json.JSONObject;
 
 import org.junit.Test;
 
 public class WatcherNodePropertyTest {
 
+    private static final String OFFLINE = "offline <ogondza@redhat.com>";
+    private static final String ONLINE = "online <ogondza@redhat.com>";
     private WatcherNodeProperty.DescriptorImpl descriptor =
             new WatcherNodeProperty.DescriptorImpl()
    ;
@@ -101,5 +105,48 @@ public class WatcherNodePropertyTest {
                 FormValidation.error(expectedMessage).toString(),
                 descriptor.doCheckOfflineAddresses(addressCandidate).toString()
         );
+    }
+
+    @Test
+    public void instantiateUsingBothAddresses() throws FormException {
+
+        final WatcherNodeProperty prop = getInstanceFor(ONLINE, OFFLINE);
+
+        assertEquals(ONLINE, prop.getOnlineAddresses());
+        assertEquals(OFFLINE, prop.getOfflineAddresses());
+    }
+
+    @Test
+    public void instantiateUsingOnlineAddress() throws FormException {
+
+        WatcherNodeProperty prop = getInstanceFor(ONLINE, "");
+
+        assertEquals(ONLINE, prop.getOnlineAddresses());
+        assertEquals("", prop.getOfflineAddresses());
+    }
+
+    @Test
+    public void instantiateUsingOfflineAddress() throws FormException {
+
+        WatcherNodeProperty prop = getInstanceFor("", OFFLINE);
+
+        assertEquals("", prop.getOnlineAddresses());
+        assertEquals(OFFLINE, prop.getOfflineAddresses());
+    }
+
+    @Test
+    public void doNotInstantiateWithoutAnyAddress() throws FormException {
+
+        assertEquals(null, getInstanceFor("", ""));
+    }
+
+    private WatcherNodeProperty getInstanceFor(final String online, final String offline) throws FormException {
+
+        final JSONObject input = new JSONObject();
+
+        input.accumulate(WatcherNodeProperty.DescriptorImpl.ONLINE_ADDRESSES, online);
+        input.accumulate(WatcherNodeProperty.DescriptorImpl.OFFLINE_ADDRESSES, offline);
+
+        return (WatcherNodeProperty) descriptor.newInstance(null, input);
     }
 }
