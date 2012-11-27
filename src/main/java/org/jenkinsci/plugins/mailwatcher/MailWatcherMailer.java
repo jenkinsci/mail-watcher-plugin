@@ -91,7 +91,7 @@ public class MailWatcherMailer {
 
             if ( addresses.length == 0 ) {
 
-                return FormValidation.error("Empty address list provided");
+                return FormValidation.warning("Empty address list provided");
             }
 
             return validateAddresses(addresses);
