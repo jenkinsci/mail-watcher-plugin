@@ -59,51 +59,6 @@ public class WatcherComputerListenerTest {
             "http://example.com/my-jenkins/"
     );
 
-    private Computer getComputerStub() {
-
-        final Computer computerStub = mock(Computer.class);
-        final Node nodeStub = getNodeStub();
-
-        when(computerStub.getDisplayName()).thenReturn("cmpName");
-        when(computerStub.getUrl()).thenReturn("fake/computer/url");
-        when(computerStub.getNode()).thenReturn(nodeStub);
-
-        return computerStub;
-    }
-
-    private Node getNodeStub() {
-
-        final Node nodeStub = mock(Node.class);
-
-        final WatcherNodeProperty property = new WatcherNodeProperty(
-                "online <recipient@list.com>", "offline <recipient@list.com>"
-        );
-
-        when(nodeStub.getNodeProperties()).thenReturn(getPropertiesList(property));
-
-        return nodeStub;
-    }
-
-    private DescribableList<NodeProperty<?>, NodePropertyDescriptor> getPropertiesList (
-            final NodeProperty<Node>... properties
-    ) {
-
-        return new DescribableList<NodeProperty<?>, NodePropertyDescriptor>(
-                desc, Arrays.asList(properties)
-        );
-    }
-
-    private MailWatcherNotification captureNotification() throws AddressException, MessagingException {
-
-        ArgumentCaptor<MailWatcherNotification> argument = ArgumentCaptor
-                .forClass(MailWatcherNotification.class)
-        ;
-
-        verify(mailer).send(argument.capture());
-
-        return argument.getValue();
-    }
-
     @Test
     public void onOffline() throws AddressException, MessagingException {
 
@@ -162,5 +117,50 @@ public class WatcherComputerListenerTest {
         assertThat(notification.getMailBody(), containsString(FAKE_COMPUTER_URL));
 
         assertTrue(notification.shouldNotify());
+    }
+
+    private Computer getComputerStub() {
+
+        final Computer computerStub = mock(Computer.class);
+        final Node nodeStub = getNodeStub();
+
+        when(computerStub.getDisplayName()).thenReturn("cmpName");
+        when(computerStub.getUrl()).thenReturn("fake/computer/url");
+        when(computerStub.getNode()).thenReturn(nodeStub);
+
+        return computerStub;
+    }
+
+    private Node getNodeStub() {
+
+        final Node nodeStub = mock(Node.class);
+
+        final WatcherNodeProperty property = new WatcherNodeProperty(
+                "online <recipient@list.com>", "offline <recipient@list.com>"
+        );
+
+        when(nodeStub.getNodeProperties()).thenReturn(getPropertiesList(property));
+
+        return nodeStub;
+    }
+
+    private DescribableList<NodeProperty<?>, NodePropertyDescriptor> getPropertiesList (
+            final NodeProperty<Node>... properties
+    ) {
+
+        return new DescribableList<NodeProperty<?>, NodePropertyDescriptor>(
+                desc, Arrays.asList(properties)
+        );
+    }
+
+    private MailWatcherNotification captureNotification() throws AddressException, MessagingException {
+
+        ArgumentCaptor<MailWatcherNotification> argument = ArgumentCaptor
+                .forClass(MailWatcherNotification.class)
+        ;
+
+        verify(mailer).send(argument.capture());
+
+        return argument.getValue();
     }
 }

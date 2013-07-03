@@ -37,7 +37,7 @@ import javax.mail.internet.MimeMessage;
  */
 public abstract class MailWatcherNotification {
 
-    private final static Logger LOGGER = Logger.getLogger(
+    private static final Logger LOGGER = Logger.getLogger(
             MailWatcherNotification.class.getName()
     );
 
@@ -48,7 +48,7 @@ public abstract class MailWatcherNotification {
     final private String recipients;
 
     final private String url;
-    final private String name;
+    final private String resourceName;
 
     final private String jenkinsRootUrl;
 
@@ -61,7 +61,7 @@ public abstract class MailWatcherNotification {
         this.recipients = builder.recipients;
 
         this.url = builder.url;
-        this.name = builder.name;
+        this.resourceName = builder.resourceName;
 
         this.jenkinsRootUrl = builder.jenkinsRootUrl;
 
@@ -90,7 +90,7 @@ public abstract class MailWatcherNotification {
 
     public String getName() {
 
-        return name;
+        return resourceName;
     }
 
     private String getArtefactUrl() {
@@ -151,7 +151,7 @@ public abstract class MailWatcherNotification {
         private String recipients;
 
         private String url = "";
-        private String name = "";
+        private String resourceName = "";
 
         public Builder(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
 
@@ -189,7 +189,7 @@ public abstract class MailWatcherNotification {
 
         protected Builder name(final String name) {
 
-            this.name = name;
+            this.resourceName = name;
             return this;
         }
 

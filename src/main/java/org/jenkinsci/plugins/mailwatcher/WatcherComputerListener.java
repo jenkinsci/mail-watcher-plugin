@@ -69,6 +69,7 @@ public class WatcherComputerListener extends ComputerListener {
         this.jenkinsRootUrl = jenkinsRootUrl;
     }
 
+    @Override
     public void onOffline(final Computer c) {
 
         getNotification().online(false)
@@ -77,6 +78,7 @@ public class WatcherComputerListener extends ComputerListener {
         ;
     }
 
+    @Override
     public void onOnline(final Computer c, final TaskListener listener) {
 
         getNotification().online(true)
@@ -85,6 +87,7 @@ public class WatcherComputerListener extends ComputerListener {
         ;
     }
 
+    @Override
     public void onTemporarilyOffline(final Computer c, final OfflineCause cause) {
 
         getNotification().online(false)
@@ -94,6 +97,7 @@ public class WatcherComputerListener extends ComputerListener {
         ;
     }
 
+    @Override
     public void onTemporarilyOnline(final Computer c) {
 
         getNotification().online(true)
@@ -151,9 +155,8 @@ public class WatcherComputerListener extends ComputerListener {
                     this.recipients(recipients);
                 }
 
-                this.url(computer.getUrl())
-                    .name(computer.getDisplayName())
-                ;
+                url(computer.getUrl());
+                name(computer.getDisplayName());
 
                 new Notification(this).send();
             }

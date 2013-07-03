@@ -89,13 +89,13 @@ public class MailWatcherMailer {
                     addressesCandidate, false
              );
 
-            if ( addresses.length == 0 ) {
+            if (addresses.length == 0) {
 
                 return FormValidation.warning("Empty address list provided");
             }
 
             return validateAddresses(addresses);
-        } catch ( AddressException ex ) {
+        } catch (AddressException ex) {
 
             return FormValidation.error(
                     "Invalid address provided: " + ex.getMessage ()
@@ -107,10 +107,10 @@ public class MailWatcherMailer {
             final InternetAddress[] addresses
     ) {
 
-        for ( final InternetAddress address: addresses ) {
+        for (final InternetAddress address: addresses) {
 
             final String rawAddress = address.toString();
-            if ( rawAddress.indexOf("@") > 0 ) continue;
+            if (rawAddress.indexOf("@") > 0) continue;
 
             return FormValidation.error(
                     rawAddress + " does not look like an email address"

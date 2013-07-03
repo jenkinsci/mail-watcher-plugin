@@ -29,6 +29,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,48 +42,22 @@ import javax.mail.internet.AddressException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {Item.class, Job.class})
+@PrepareForTest({Item.class, Job.class})
 public class WatcherItemListenerTest {
 
     private static final String FAKE_JOB_URL = "http://example.com/my-jenkins/fake/job/url";
 
-    final private MailWatcherMailer mailer = Mockito.mock(MailWatcherMailer.class);
+    final private MailWatcherMailer mailer = mock(MailWatcherMailer.class);
 
     final private WatcherItemListener listener = new WatcherItemListener(
             mailer,
             "http://example.com/my-jenkins/"
     );
-
-
-    private Job<?, ?> getJobStub() {
-
-        final Job<?, ?> jobStub = PowerMockito.mock(Job.class);
-
-        when(jobStub.getProperty(WatcherJobProperty.class))
-            .thenReturn(new WatcherJobProperty("fake <recipient@list.com>"))
-        ;
-
-        when(jobStub.getShortUrl()).thenReturn("fake/job/url");
-
-        return jobStub;
-    }
-
-    private MailWatcherNotification captureNotification() throws AddressException, MessagingException {
-
-        ArgumentCaptor<MailWatcherNotification> argument = ArgumentCaptor
-                .forClass(MailWatcherNotification.class)
-        ;
-
-        verify(mailer).send(argument.capture());
-
-        return argument.getValue();
-    }
 
     @Test
     public void onRenamed() throws AddressException, MessagingException {
@@ -138,13 +113,13 @@ public class WatcherItemListenerTest {
     @Test
     public void ignoreItemsThatAreNotJobs() throws AddressException, MessagingException {
 
-        final Item itemStub = Mockito.mock(Item.class);
+        final Item itemStub = mock(Item.class);
 
         listener.onRenamed(itemStub, "oldName", "newName");
         listener.onUpdated(itemStub);
         listener.onDeleted(itemStub);
 
-        verify(mailer, never ())
+        verify(mailer, never())
                 .send(any(MailWatcherNotification.class))
         ;
     }
@@ -186,5 +161,29 @@ public class WatcherItemListenerTest {
 
         listener.onUpdated(jobStub);
         assertFalse(captureNotification().shouldNotify());
+    }
+
+    private Job<?, ?> getJobStub() {
+
+        final Job<?, ?> jobStub = PowerMockito.mock(Job.class);
+
+        when(jobStub.getProperty(WatcherJobProperty.class))
+            .thenReturn(new WatcherJobProperty("fake <recipient@list.com>"))
+        ;
+
+        when(jobStub.getShortUrl()).thenReturn("fake/job/url");
+
+        return jobStub;
+    }
+
+    private MailWatcherNotification captureNotification() throws AddressException, MessagingException {
+
+        ArgumentCaptor<MailWatcherNotification> argument = ArgumentCaptor
+                .forClass(MailWatcherNotification.class)
+        ;
+
+        verify(mailer).send(argument.capture());
+
+        return argument.getValue();
     }
 }

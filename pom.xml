@@ -43,6 +43,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <surefire.useFile>false</surefire.useFile>
   </properties>
 
   <dependencies>

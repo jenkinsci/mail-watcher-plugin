@@ -22,6 +22,7 @@
  * THE SOFTWARE.
  */
 package org.jenkinsci.plugins.mailwatcher;
+
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Job;
@@ -31,9 +32,8 @@ import jenkins.model.Jenkins;
 /**
  * Notify whenever Job configuration changes.
  *
- * Sends email do the list of recipients on following events: onRenamed,
+ * Sends email to the list of recipients on following events: onRenamed,
  * onUpdated and onDeleted.
- *
  *
  * @author ogondza
  */
@@ -67,7 +67,7 @@ public class WatcherItemListener extends ItemListener {
     @Override
     public void onRenamed(Item item, String oldName, String newName) {
 
-        if ( !(item instanceof Job<?, ?>) ) return;
+        if (!(item instanceof Job<?, ?>)) return;
 
         final Job<?, ?> job = (Job<?, ?>) item;
 
@@ -77,7 +77,7 @@ public class WatcherItemListener extends ItemListener {
     @Override
     public void onUpdated(Item item) {
 
-        if ( !(item instanceof Job<?, ?>) ) return;
+        if (!(item instanceof Job<?, ?>)) return;
 
         getNotification().subject("updated").send(item);
     }
@@ -85,7 +85,7 @@ public class WatcherItemListener extends ItemListener {
     @Override
     public void onDeleted(Item item) {
 
-        if ( !(item instanceof Job<?, ?>) ) return;
+        if (!(item instanceof Job<?, ?>)) return;
 
         getNotification().subject("deleted").send(item);
     }
@@ -129,9 +129,8 @@ public class WatcherItemListener extends ItemListener {
                     this.recipients(property.getWatcherAddresses());
                 }
 
-                this.url(job.getShortUrl())
-                    .name(job.getName())
-                ;
+                url(job.getShortUrl());
+                name(job.getName());
 
                 new Notification(this).send();
             }

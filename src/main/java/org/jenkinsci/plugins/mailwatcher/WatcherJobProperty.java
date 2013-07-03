@@ -59,7 +59,9 @@ public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
     public static class DescriptorImpl extends JobPropertyDescriptor {
 
         @Override
-        public boolean isApplicable(Class<? extends Job> jobType) {
+        public boolean isApplicable(
+                @SuppressWarnings("rawtypes") Class<? extends Job> jobType
+        ) {
 
             return true;
         }
