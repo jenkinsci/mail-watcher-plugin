@@ -46,7 +46,7 @@ public class WatcherItemListener extends ItemListener {
     public WatcherItemListener() {
 
         this(
-                new MailWatcherMailer(),
+                new MailWatcherMailer(Jenkins.getInstance()),
                 Jenkins.getInstance().getRootUrl()
         );
     }

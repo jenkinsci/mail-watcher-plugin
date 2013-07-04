@@ -23,6 +23,8 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
+import hudson.model.User;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,6 +51,7 @@ public abstract class MailWatcherNotification {
 
     final private String url;
     final private String resourceName;
+    final private User initiator;
 
     final private String jenkinsRootUrl;
 
@@ -62,6 +65,7 @@ public abstract class MailWatcherNotification {
 
         this.url = builder.url;
         this.resourceName = builder.resourceName;
+        this.initiator = builder.initiator;
 
         this.jenkinsRootUrl = builder.jenkinsRootUrl;
 
@@ -98,6 +102,11 @@ public abstract class MailWatcherNotification {
         return jenkinsRootUrl + this.getUrl();
     }
 
+    private User getInitiator() {
+
+        return initiator;
+    }
+
     protected boolean shouldNotify() {
 
         return recipients != null;
@@ -110,7 +119,17 @@ public abstract class MailWatcherNotification {
 
     public final String getMailBody() {
 
-        return this.getBody() + "\n\nUrl: " + this.getArtefactUrl();
+        return new StringBuilder(this.getBody())
+            .append("\n\n")
+            .append(pair("Url", this.getArtefactUrl()))
+            .append(pair("Initiator", this.getInitiator().getId()))
+            .toString()
+        ;
+    }
+
+    private String pair(final String key, final String value) {
+
+        return String.format("%s: %s\n", key, value);
     }
 
     public final void send() {
@@ -152,11 +171,13 @@ public abstract class MailWatcherNotification {
 
         private String url = "";
         private String resourceName = "";
+        private User initiator;
 
         public Builder(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
 
             this.mailer = mailer;
 
+            this.initiator = mailer.getDefaultInitiator();
             this.jenkinsRootUrl = jenkinsRootUrl == null
                     ? "/"
                     : jenkinsRootUrl
@@ -190,6 +211,12 @@ public abstract class MailWatcherNotification {
         protected Builder name(final String name) {
 
             this.resourceName = name;
+            return this;
+        }
+
+        protected Builder initiator(final User initiator) {
+
+            this.initiator = initiator;
             return this;
         }
 

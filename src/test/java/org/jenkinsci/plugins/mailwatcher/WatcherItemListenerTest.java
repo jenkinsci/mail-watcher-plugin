@@ -35,22 +35,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import hudson.model.Item;
 import hudson.model.Job;
+import hudson.model.User;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Item.class, Job.class})
 public class WatcherItemListenerTest {
 
     private static final String FAKE_JOB_URL = "http://example.com/my-jenkins/fake/job/url";
+    private static final String FAKE_INITIATOR = "someone@example.com";
 
     final private MailWatcherMailer mailer = mock(MailWatcherMailer.class);
 
@@ -58,6 +55,14 @@ public class WatcherItemListenerTest {
             mailer,
             "http://example.com/my-jenkins/"
     );
+
+    @Before
+    public void setUp() {
+
+        final User initiator = mock(User.class);
+        when(initiator.getId()).thenReturn(FAKE_INITIATOR);
+        when(mailer.getDefaultInitiator()).thenReturn(initiator);
+    }
 
     @Test
     public void onRenamed() throws AddressException, MessagingException {
@@ -71,7 +76,7 @@ public class WatcherItemListenerTest {
 
         assertEquals("fake <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Job newName renamed from oldName", notification.getMailSubject());
-        assertThat(notification.getMailBody(), containsString(FAKE_JOB_URL));
+        checkBody(notification);
 
         assertTrue(notification.shouldNotify());
     }
@@ -88,7 +93,7 @@ public class WatcherItemListenerTest {
 
         assertEquals("fake <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Job updated_job_name updated", notification.getMailSubject());
-        assertThat(notification.getMailBody(), containsString(FAKE_JOB_URL));
+        checkBody(notification);
 
         assertTrue(notification.shouldNotify());
     }
@@ -105,7 +110,7 @@ public class WatcherItemListenerTest {
 
         assertEquals("fake <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Job deleted_job_name deleted", notification.getMailSubject());
-        assertThat(notification.getMailBody(), containsString(FAKE_JOB_URL));
+        checkBody(notification);
 
         assertTrue(notification.shouldNotify());
     }
@@ -165,7 +170,7 @@ public class WatcherItemListenerTest {
 
     private Job<?, ?> getJobStub() {
 
-        final Job<?, ?> jobStub = PowerMockito.mock(Job.class);
+        final Job<?, ?> jobStub = mock(Job.class);
 
         when(jobStub.getProperty(WatcherJobProperty.class))
             .thenReturn(new WatcherJobProperty("fake <recipient@list.com>"))
@@ -185,5 +190,11 @@ public class WatcherItemListenerTest {
         verify(mailer).send(argument.capture());
 
         return argument.getValue();
+    }
+
+    private void checkBody(final MailWatcherNotification notification) {
+
+        assertThat(notification.getMailBody(), containsString(FAKE_JOB_URL));
+        assertThat(notification.getMailBody(), containsString(FAKE_INITIATOR));
     }
 }

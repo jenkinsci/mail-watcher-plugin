@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import hudson.model.Computer;
 import hudson.model.Node;
+import hudson.model.User;
 import hudson.slaves.NodeProperty;
 import hudson.slaves.NodePropertyDescriptor;
 import hudson.slaves.NodeDescriptor;
@@ -43,12 +44,14 @@ import java.util.Arrays;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 public class WatcherComputerListenerTest {
 
     private static final String FAKE_COMPUTER_URL = "http://example.com/my-jenkins/fake/computer/url";
+    private static final String FAKE_INITIATOR = "someone@example.com";
 
     final private NodeDescriptor desc = mock(NodeDescriptor.class);
 
@@ -59,6 +62,14 @@ public class WatcherComputerListenerTest {
             "http://example.com/my-jenkins/"
     );
 
+    @Before
+    public void setUp() {
+
+        final User initiator = mock(User.class);
+        when(initiator.getId()).thenReturn(FAKE_INITIATOR);
+        when(mailer.getDefaultInitiator()).thenReturn(initiator);
+    }
+
     @Test
     public void onOffline() throws AddressException, MessagingException {
 
@@ -68,7 +79,7 @@ public class WatcherComputerListenerTest {
 
         assertEquals("offline <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Computer cmpName marked offline", notification.getMailSubject());
-        assertThat(notification.getMailBody(), containsString(FAKE_COMPUTER_URL));
+        checkBody(notification);
 
         assertTrue(notification.shouldNotify());
     }
@@ -82,7 +93,7 @@ public class WatcherComputerListenerTest {
 
         assertEquals("online <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Computer cmpName marked online", notification.getMailSubject());
-        assertThat(notification.getMailBody(), containsString(FAKE_COMPUTER_URL));
+        checkBody(notification);
 
         assertTrue(notification.shouldNotify());
     }
@@ -99,8 +110,8 @@ public class WatcherComputerListenerTest {
 
         assertEquals("offline <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Computer cmpName marked temporarily offline", notification.getMailSubject());
-        assertThat(notification.getMailBody(), containsString(FAKE_COMPUTER_URL));
         assertThat(notification.getMailBody(), containsString("Mocked cause"));
+        checkBody(notification);
 
         assertTrue(notification.shouldNotify());
     }
@@ -114,7 +125,7 @@ public class WatcherComputerListenerTest {
 
         assertEquals("online <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Computer cmpName marked temporarily online", notification.getMailSubject());
-        assertThat(notification.getMailBody(), containsString(FAKE_COMPUTER_URL));
+        checkBody(notification);
 
         assertTrue(notification.shouldNotify());
     }
@@ -162,5 +173,11 @@ public class WatcherComputerListenerTest {
         verify(mailer).send(argument.capture());
 
         return argument.getValue();
+    }
+
+    private void checkBody(final MailWatcherNotification notification) {
+
+        assertThat(notification.getMailBody(), containsString(FAKE_COMPUTER_URL));
+        assertThat(notification.getMailBody(), containsString(FAKE_INITIATOR));
     }
 }

@@ -23,17 +23,21 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
+import hudson.model.User;
 import hudson.tasks.Mailer;
 import hudson.util.FormValidation;
 
 import java.util.Date;
 
+import javax.annotation.Nonnull;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+import jenkins.model.Jenkins;
 
 /**
  * Send email notification.
@@ -42,7 +46,23 @@ import javax.mail.internet.MimeMessage;
  */
 public class MailWatcherMailer {
 
-    final private Mailer.DescriptorImpl mailerDescriptor = Mailer.descriptor();
+    private final Mailer.DescriptorImpl mailerDescriptor;
+    private final Jenkins jenkins;
+
+    /*package*/ MailWatcherMailer(final @Nonnull Jenkins jenkins) {
+
+        this.jenkins = jenkins;
+        this.mailerDescriptor = jenkins.getDescriptorByType(Mailer.DescriptorImpl.class);
+    }
+
+    /*package*/ @Nonnull User getDefaultInitiator() {
+
+        final User current = User.current();
+        return current != null
+                ? current
+                : User.getUnknown()
+        ;
+    }
 
     /**
      * Send the notification
