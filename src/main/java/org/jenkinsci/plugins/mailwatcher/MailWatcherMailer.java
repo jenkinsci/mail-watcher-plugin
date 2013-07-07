@@ -23,12 +23,17 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
+import hudson.Plugin;
 import hudson.model.User;
+import hudson.plugins.jobConfigHistory.JobConfigHistory;
 import hudson.tasks.Mailer;
 import hudson.util.FormValidation;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -39,6 +44,8 @@ import javax.mail.internet.MimeMessage;
 
 import jenkins.model.Jenkins;
 
+import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
+
 /**
  * Send email notification.
  *
@@ -46,13 +53,15 @@ import jenkins.model.Jenkins;
  */
 public class MailWatcherMailer {
 
-    private final Mailer.DescriptorImpl mailerDescriptor;
-    private final Jenkins jenkins;
+    private final @Nonnull Mailer.DescriptorImpl mailerDescriptor;
+    private final @Nonnull Jenkins jenkins;
+    private final @Nonnull ConfigHistory configHistory;
 
     /*package*/ MailWatcherMailer(final @Nonnull Jenkins jenkins) {
 
         this.jenkins = jenkins;
         this.mailerDescriptor = jenkins.getDescriptorByType(Mailer.DescriptorImpl.class);
+        this.configHistory = new ConfigHistory((JobConfigHistory) plugin("jobConfigHistory"));
     }
 
     /*package*/ @Nonnull User getDefaultInitiator() {
@@ -62,6 +71,27 @@ public class MailWatcherMailer {
                 ? current
                 : User.getUnknown()
         ;
+    }
+
+    /*package*/ @CheckForNull Plugin plugin(final String plugin) {
+
+        return jenkins.getPlugin(plugin);
+    }
+
+    /*package*/ @Nonnull URL absoluteUrl(final @Nonnull String url) {
+
+        try {
+
+            return new URL(jenkins.getRootUrl() + url);
+        } catch (MalformedURLException ex) {
+
+            throw new AssertionError(ex);
+        }
+    }
+
+    /*package*/ @Nonnull ConfigHistory configHistory() {
+
+        return configHistory;
     }
 
     /**

@@ -27,6 +27,12 @@ import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.listeners.ItemListener;
+
+import java.net.URL;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
 import jenkins.model.Jenkins;
 
 /**
@@ -40,7 +46,7 @@ import jenkins.model.Jenkins;
 @Extension
 public class WatcherItemListener extends ItemListener {
 
-    private final MailWatcherMailer mailer;
+    private final @Nonnull MailWatcherMailer mailer;
     private final String jenkinsRootUrl;
 
     public WatcherItemListener() {
@@ -97,9 +103,12 @@ public class WatcherItemListener extends ItemListener {
 
     private static class Notification extends MailWatcherNotification {
 
+        private final URL historyUrl;
+
         public Notification(final Builder builder) {
 
             super(builder);
+            historyUrl = builder.historyUrl;
         }
 
         @Override
@@ -108,7 +117,22 @@ public class WatcherItemListener extends ItemListener {
             return String.format("Job %s %s", getName (), super.getSubject());
         }
 
+        @Override
+        protected @Nonnull Map<String, String> pairs() {
+
+            final Map<String, String> pairs = super.pairs();
+
+            if (historyUrl != null) {
+
+                pairs.put("Change", historyUrl.toString());
+            }
+
+            return pairs;
+        }
+
         private static class Builder extends MailWatcherNotification.Builder {
+
+            private URL historyUrl;
 
             public Builder(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
 
@@ -126,11 +150,17 @@ public class WatcherItemListener extends ItemListener {
 
                 if (property!=null) {
 
-                    this.recipients(property.getWatcherAddresses());
+                    recipients(property.getWatcherAddresses());
                 }
 
                 url(job.getShortUrl());
                 name(job.getName());
+
+                final String url = mailer.configHistory().lastChangeDiffUrl(job);
+                if (url != null) {
+
+                    historyUrl = mailer.absoluteUrl(url);
+                }
 
                 new Notification(this).send();
             }

@@ -40,43 +40,51 @@ import hudson.model.User;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 public class WatcherItemListenerTest {
 
-    private static final String FAKE_JOB_URL = "http://example.com/my-jenkins/fake/job/url";
+    protected static final String INSTANCE_URL = "http://example.com/my-jenkins/";
+    private static final String FAKE_JOB_URL = "fake/job/url";
     private static final String FAKE_INITIATOR = "someone@example.com";
 
-    final private MailWatcherMailer mailer = mock(MailWatcherMailer.class);
+    protected MailWatcherMailer mailer;
+    protected MailWatcherNotification notification;
 
-    final private WatcherItemListener listener = new WatcherItemListener(
-            mailer,
-            "http://example.com/my-jenkins/"
-    );
+    private WatcherItemListener listener;
+
+    protected Job<?, ?> jobStub;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
+
+        mailer = mock(MailWatcherMailer.class);
+        listener = new WatcherItemListener(mailer, INSTANCE_URL);
 
         final User initiator = mock(User.class);
         when(initiator.getId()).thenReturn(FAKE_INITIATOR);
         when(mailer.getDefaultInitiator()).thenReturn(initiator);
+
+        when(mailer.configHistory()).thenReturn(new ConfigHistory(null));
+
+        jobStub = getJobStub();
     }
 
     @Test
     public void onRenamed() throws AddressException, MessagingException {
 
-        final Job<?, ?> jobStub = getJobStub();
         when(jobStub.getName()).thenReturn("newName");
 
         listener.onRenamed(jobStub, "oldName", "newName");
 
-        final MailWatcherNotification notification = captureNotification();
+        notification = captureNotification();
 
         assertEquals("fake <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Job newName renamed from oldName", notification.getMailSubject());
-        checkBody(notification);
+        checkBody();
 
         assertTrue(notification.shouldNotify());
     }
@@ -84,16 +92,15 @@ public class WatcherItemListenerTest {
     @Test
     public void onUpdated() throws AddressException, MessagingException {
 
-        final Job<?, ?> jobStub = getJobStub();
         when(jobStub.getName()).thenReturn("updated_job_name");
 
         listener.onUpdated(jobStub);
 
-        final MailWatcherNotification notification = captureNotification();
+        notification = captureNotification();
 
         assertEquals("fake <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Job updated_job_name updated", notification.getMailSubject());
-        checkBody(notification);
+        checkBody();
 
         assertTrue(notification.shouldNotify());
     }
@@ -101,16 +108,15 @@ public class WatcherItemListenerTest {
     @Test
     public void onDeleted() throws AddressException, MessagingException {
 
-        final Job<?, ?> jobStub = getJobStub();
         when(jobStub.getName()).thenReturn("deleted_job_name");
 
         listener.onDeleted(jobStub);
 
-        final MailWatcherNotification notification = captureNotification();
+        notification = captureNotification();
 
         assertEquals("fake <recipient@list.com>", notification.getRecipients());
         assertEquals("mail-watcher-plugin: Job deleted_job_name deleted", notification.getMailSubject());
-        checkBody(notification);
+        checkBody();
 
         assertTrue(notification.shouldNotify());
     }
@@ -132,8 +138,6 @@ public class WatcherItemListenerTest {
     @Test
     public void doNothingIfThereAreNoRecipientsDeleted() throws AddressException, MessagingException {
 
-        final Job<?, ?> jobStub = getJobStub();
-
         when(jobStub.getProperty(WatcherJobProperty.class))
                 .thenReturn(null)
         ;
@@ -145,8 +149,6 @@ public class WatcherItemListenerTest {
     @Test
     public void doNothingIfThereAreNoRecipientsRenamed() throws AddressException, MessagingException {
 
-        final Job<?, ?> jobStub = getJobStub();
-
         when(jobStub.getProperty(WatcherJobProperty.class))
                 .thenReturn(null)
         ;
@@ -157,8 +159,6 @@ public class WatcherItemListenerTest {
 
     @Test
     public void doNothingIfThereAreNoRecipientsUpdated() throws AddressException, MessagingException {
-
-        final Job<?, ?> jobStub = getJobStub();
 
         when(jobStub.getProperty(WatcherJobProperty.class))
                 .thenReturn(null)
@@ -192,9 +192,9 @@ public class WatcherItemListenerTest {
         return argument.getValue();
     }
 
-    private void checkBody(final MailWatcherNotification notification) {
+    protected void checkBody() {
 
-        assertThat(notification.getMailBody(), containsString(FAKE_JOB_URL));
+        assertThat(notification.getMailBody(), containsString(INSTANCE_URL + FAKE_JOB_URL));
         assertThat(notification.getMailBody(), containsString(FAKE_INITIATOR));
     }
 }

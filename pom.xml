@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.460</version><!-- which version of Jenkins is this plugin built against? -->
+    <version>1.460</version>
   </parent>
 
   <groupId>org.jenkins-ci.plugins</groupId>
@@ -48,9 +48,34 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>jobConfigHistory</artifactId>
+      <version>2.0</version>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <version>1.8.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-core</artifactId>
+      <version>1.4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <version>1.4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <version>1.4.12</version>
       <scope>test</scope>
     </dependency>
     <dependency>

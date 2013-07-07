@@ -25,9 +25,12 @@ package org.jenkinsci.plugins.mailwatcher;
 
 import hudson.model.User;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.MimeMessage;
@@ -119,12 +122,26 @@ public abstract class MailWatcherNotification {
 
     public final String getMailBody() {
 
-        return new StringBuilder(this.getBody())
-            .append("\n\n")
-            .append(pair("Url", this.getArtefactUrl()))
-            .append(pair("Initiator", this.getInitiator().getId()))
+        final StringBuilder body = new StringBuilder();
+
+        for (final Map.Entry<String, String> pair: pairs().entrySet()) {
+
+            body.append(pair(pair.getKey(), pair.getValue()));
+        }
+
+        return body.append("\n\n")
+            .append(this.getBody())
             .toString()
         ;
+    }
+
+    protected @Nonnull Map<String, String> pairs() {
+
+        final Map<String, String> pairs = new HashMap<String, String>(2);
+        pairs.put("Url", this.getArtefactUrl());
+        pairs.put("Initiator", this.getInitiator().getId());
+
+        return pairs;
     }
 
     private String pair(final String key, final String value) {
@@ -162,7 +179,7 @@ public abstract class MailWatcherNotification {
 
     public static abstract class Builder {
 
-        final private MailWatcherMailer mailer;
+        final protected MailWatcherMailer mailer;
         final private String jenkinsRootUrl;
 
         private String subject = "";
