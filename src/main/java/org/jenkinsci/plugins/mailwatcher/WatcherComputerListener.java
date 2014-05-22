@@ -101,7 +101,7 @@ public class WatcherComputerListener extends ComputerListener {
     public void onTemporarilyOnline(final Computer c) {
 
         getNotification().online(true)
-                .subject("marked temporarily online")
+                .subject("marked online (was temporarily offline)")
                 .send(c)
         ;
     }

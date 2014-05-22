@@ -124,7 +124,7 @@ public class WatcherComputerListenerTest {
         final MailWatcherNotification notification = captureNotification();
 
         assertEquals("online <recipient@list.com>", notification.getRecipients());
-        assertEquals("mail-watcher-plugin: Computer cmpName marked temporarily online", notification.getMailSubject());
+        assertEquals("mail-watcher-plugin: Computer cmpName marked online (was temporarily offline)", notification.getMailSubject());
         checkBody(notification);
 
         assertTrue(notification.shouldNotify());
