@@ -25,11 +25,13 @@ package org.jenkinsci.plugins.mailwatcher;
 
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.listeners.ItemListener;
 
 import java.net.URL;
 import java.util.Map;
+import java.util.Stack;
 
 import javax.annotation.Nonnull;
 
@@ -153,7 +155,19 @@ public class WatcherItemListener extends ItemListener {
                     recipients(property.getWatcherAddresses());
                 }
 
-                url(job.getShortUrl());
+                Stack<String> stack = new Stack<String>();
+                stack.push(job.getShortUrl());
+                ItemGroup parent = job.getParent();
+                while (parent != null && parent instanceof Item) {
+                    Item item = (Item) parent;
+                    stack.push(item.getShortUrl());
+                    parent = item.getParent();
+                }
+                StringBuilder urlPath = new StringBuilder();
+                while (!stack.isEmpty()) {
+                    urlPath.append(stack.pop());
+                }
+                url(urlPath.toString());
                 name(job.getName());
 
                 final String url = mailer.configHistory().lastChangeDiffUrl(job);
