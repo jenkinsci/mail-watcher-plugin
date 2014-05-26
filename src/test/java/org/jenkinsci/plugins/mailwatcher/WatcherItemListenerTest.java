@@ -34,6 +34,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import hudson.model.Item;
+import hudson.model.AbstractItem;
 import hudson.model.Job;
 import hudson.model.User;
 
@@ -43,8 +44,14 @@ import javax.mail.internet.AddressException;
 import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(AbstractItem.class)
 public class WatcherItemListenerTest {
 
     protected static final String INSTANCE_URL = "http://example.com/my-jenkins/";
@@ -76,7 +83,7 @@ public class WatcherItemListenerTest {
     @Test
     public void onRenamed() throws AddressException, MessagingException {
 
-        when(jobStub.getName()).thenReturn("newName");
+        PowerMockito.when(jobStub.getFullDisplayName()).thenReturn("newName");
 
         listener.onRenamed(jobStub, "oldName", "newName");
 
@@ -92,7 +99,7 @@ public class WatcherItemListenerTest {
     @Test
     public void onUpdated() throws AddressException, MessagingException {
 
-        when(jobStub.getName()).thenReturn("updated_job_name");
+        PowerMockito.when(jobStub.getFullDisplayName()).thenReturn("updated_job_name");
 
         listener.onUpdated(jobStub);
 
@@ -108,7 +115,7 @@ public class WatcherItemListenerTest {
     @Test
     public void onDeleted() throws AddressException, MessagingException {
 
-        when(jobStub.getName()).thenReturn("deleted_job_name");
+        PowerMockito.when(jobStub.getFullDisplayName()).thenReturn("deleted_job_name");
 
         listener.onDeleted(jobStub);
 
@@ -170,7 +177,7 @@ public class WatcherItemListenerTest {
 
     private Job<?, ?> getJobStub() {
 
-        final Job<?, ?> jobStub = mock(Job.class);
+        final Job<?, ?> jobStub = PowerMockito.mock(Job.class);
 
         when(jobStub.getProperty(WatcherJobProperty.class))
             .thenReturn(new WatcherJobProperty("fake <recipient@list.com>"))

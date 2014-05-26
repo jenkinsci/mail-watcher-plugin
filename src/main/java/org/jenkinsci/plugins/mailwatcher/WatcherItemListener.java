@@ -168,7 +168,7 @@ public class WatcherItemListener extends ItemListener {
                     urlPath.append(stack.pop());
                 }
                 url(urlPath.toString());
-                name(job.getName());
+                name(job.getFullDisplayName());
 
                 final String url = mailer.configHistory().lastChangeDiffUrl(job);
                 if (url != null) {
