@@ -78,6 +78,21 @@ public class WatcherComputerListener extends ComputerListener {
         ;
     }
 
+    // @Override
+    public void onOffline(final Computer c, final OfflineCause cause) {
+
+        if (cause == null) {
+            onOffline(c);
+            return;
+        }
+
+        getNotification().online(false)
+                .subject("marked offline")
+                .body(cause.toString())
+                .send(c)
+        ;
+    }
+
     @Override
     public void onOnline(final Computer c, final TaskListener listener) {
 
@@ -168,21 +183,12 @@ public class WatcherComputerListener extends ComputerListener {
                 final Node node = computer.getNode();
                 if (node==null) return null;
 
-                final DescribableList<NodeProperty<?>, NodePropertyDescriptor> properties =
-                        node.getNodeProperties()
+                final DescribableList<NodeProperty<?>, NodePropertyDescriptor> properties = (node instanceof Jenkins)
+                        ? ((Jenkins) node).getGlobalNodeProperties()
+                        : node.getNodeProperties()
                 ;
 
-                if (properties == null) return null;
-
-                for(NodeProperty<?> property: properties) {
-
-                    if (property instanceof WatcherNodeProperty) {
-
-                        return (WatcherNodeProperty) property;
-                    }
-                }
-
-                return null;
+                return properties.get(WatcherNodeProperty.class);
             }
         }
     }
