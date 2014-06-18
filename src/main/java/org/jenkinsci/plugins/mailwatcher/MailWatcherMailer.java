@@ -117,6 +117,7 @@ public class MailWatcherMailer {
         msg.setSubject(notification.getMailSubject());
         msg.setText(notification.getMailBody());
         msg.setRecipients(Message.RecipientType.TO, recipients);
+        msg.setReplyTo(InternetAddress.parse(mailerDescriptor.getReplyToAddress()));
 
         Transport.send(msg);
 
