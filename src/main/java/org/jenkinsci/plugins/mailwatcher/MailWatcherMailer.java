@@ -45,6 +45,8 @@ import javax.mail.internet.MimeMessage;
 import jenkins.model.Jenkins;
 
 import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
  * Send email notification.
@@ -113,15 +115,24 @@ public class MailWatcherMailer {
 
         final MimeMessage msg = new MimeMessage(mailerDescriptor.createSession());
         msg.setFrom(new InternetAddress(mailerDescriptor.getAdminAddress()));
+        final String replyToAddress = mailerDescriptor.getReplyToAddress();
+        if (replyToAddress != null) {
+            msg.setReplyTo(InternetAddress.parse(replyToAddress));
+        }
+
         msg.setSentDate(new Date());
         msg.setSubject(notification.getMailSubject());
         msg.setText(notification.getMailBody());
         msg.setRecipients(Message.RecipientType.TO, recipients);
-        msg.setReplyTo(InternetAddress.parse(mailerDescriptor.getReplyToAddress()));
 
-        Transport.send(msg);
+        send(msg);
 
         return msg;
+    }
+
+    @Restricted(NoExternalUse.class)
+    /*package*/ void send(final MimeMessage msg) throws MessagingException {
+        Transport.send(msg);
     }
 
     /**
