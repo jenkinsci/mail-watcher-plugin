@@ -38,6 +38,7 @@ import hudson.model.FreeStyleProject;
 import hudson.model.User;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.security.ACL;
+import hudson.slaves.DumbSlave;
 import hudson.slaves.OfflineCause;
 import hudson.tasks.Builder;
 import hudson.tasks.Mailer;
@@ -106,12 +107,15 @@ public class NodeStatusTest {
         user.addProperty(new Mailer.UserProperty("a_user@example.com"));
         ACL.impersonate(user.impersonate());
 
+        DumbSlave slave = j.createOnlineSlave();
+
         FreeStyleProject project = j.jenkins.createProject(FreeStyleProject.class, "a_project");
         project.getBuildersList().add(new SlaveOccupyingBuildStep(started, running));
+        project.setAssignedNode(slave);
         QueueTaskFuture<FreeStyleBuild> future = project.scheduleBuild2(0);
 
         started.block();
-        j.jenkins.toComputer().doToggleOffline("Taking offline so no further builds are scheduled");
+        slave.toComputer().doToggleOffline("Taking offline so no further builds are scheduled");
 
         verify(mailer, never()).send(any(MailWatcherNotification.class));
 
