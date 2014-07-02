@@ -89,6 +89,9 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
         try {
             causeClass = Class.forName("hudson.slaves.OfflineCause$UserCause");
         } catch (ClassNotFoundException ex) {
+            // UserCause was introduced in 1.551. For earlier versions it would
+            // be necessary to parse the message and create the user instance.
+            // The notification is gracefully skipped instead.
             return null;
         }
         OfflineCause cause = computer.getOfflineCause();
