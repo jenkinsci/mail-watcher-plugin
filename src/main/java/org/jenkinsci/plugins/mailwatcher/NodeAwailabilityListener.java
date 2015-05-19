@@ -32,6 +32,7 @@ import hudson.model.listeners.RunListener;
 import hudson.slaves.OfflineCause;
 import hudson.tasks.Mailer;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import jenkins.model.Jenkins;
@@ -102,11 +103,15 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
             Method m = causeClass.getMethod("getUser");
             Object user = m.invoke(computer.getOfflineCause());
             return (User) user;
-        } catch (ReflectiveOperationException ex) {
-            throw new AssertionError(ex);
         } catch (SecurityException ex) {
             throw new AssertionError(ex);
         } catch (IllegalArgumentException ex) {
+            throw new AssertionError(ex);
+        } catch (NoSuchMethodException ex) {
+            throw new AssertionError(ex);
+        } catch (IllegalAccessException ex) {
+            throw new AssertionError(ex);
+        } catch (InvocationTargetException ex) {
             throw new AssertionError(ex);
         }
     }
