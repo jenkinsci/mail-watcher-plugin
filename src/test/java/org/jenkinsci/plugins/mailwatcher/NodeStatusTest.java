@@ -30,6 +30,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import hudson.Launcher;
+import hudson.maven.MavenModuleSet;
 import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.AbstractBuild;
@@ -42,6 +43,7 @@ import hudson.slaves.DumbSlave;
 import hudson.slaves.OfflineCause;
 import hudson.tasks.Builder;
 import hudson.tasks.Mailer;
+import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.Shell;
 import hudson.util.OneShotEvent;
 
@@ -55,6 +57,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.SingleFileSCM;
 import org.mockito.ArgumentCaptor;
 import org.mockito.internal.util.reflection.Whitebox;
 
@@ -152,6 +155,19 @@ public class NodeStatusTest {
         future.get();
 
         verify(mailer, never()).send(any(MailWatcherNotification.class));
+    }
+
+    @Test @Bug(28888)
+    public void correctlyIdentifySlave() throws Exception {
+        MavenInstallation maven = j.configureMaven3();
+        MavenModuleSet mp = j.createMavenProject();
+        mp.setGoals("clean");
+        mp.setMaven(maven.getName());
+        mp.setScm(new SingleFileSCM("pom.xml",
+                "<project><modelVersion>4.0.0</modelVersion><groupId>g</groupId><artifactId>a</artifactId><version>0</version></project>")
+        );
+
+        j.buildAndAssertSuccess(mp);
     }
 
     private static final class SomeOfflineCause extends OfflineCause {}

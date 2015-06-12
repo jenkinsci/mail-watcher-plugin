@@ -24,8 +24,10 @@
 package org.jenkinsci.plugins.mailwatcher;
 
 import hudson.Extension;
+import hudson.model.AbstractBuild;
 import hudson.model.Computer;
 import hudson.model.Executor;
+import hudson.model.Node;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.model.listeners.RunListener;
@@ -34,11 +36,17 @@ import hudson.tasks.Mailer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.annotation.CheckForNull;
 
 import jenkins.model.Jenkins;
 
 @Extension
 public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
+
+    private static final Logger LOGGER = Logger.getLogger(NodeAwailabilityListener.class.getName());
 
     private final MailWatcherMailer mailer;
     private final String jenkinsRootUrl;
@@ -67,7 +75,12 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
     @Override
     public void onFinalized(Run<?, ?> r) {
 
-        Computer computer = computer();
+        Computer computer = computer(r);
+        if (computer == null) {
+            String msg = String.format("Unable to identify the slave of %s (%s)", r,  r.getClass());
+            LOGGER.log(Level.INFO, msg, new Exception());
+            return;
+        }
 
         if (!computer.isTemporarilyOffline()) return;
 
@@ -116,13 +129,19 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
         }
     }
 
-    private Computer computer() {
-        Thread t = Thread.currentThread();
-        if (t instanceof Executor) {
-            return ((Executor) t).getOwner();
+    private @CheckForNull Computer computer(Run<?, ?> r) {
+        if (r instanceof AbstractBuild) {
+            Node node = ((AbstractBuild<?, ?>) r).getBuiltOn();
+            if (node != null) {
+                return node.toComputer();
+            }
         }
 
-        throw new AssertionError("Whoa?!");
+        // There are 2 alternatives to try as a fallback. Let's see if it is necessary.
+        // r.getExecutor().getOwner();
+        // And
+        // ((Executor) Thread.currentThread()).getOwner();
+        return null;
     }
 
     private boolean isIdle(Computer computer) {
