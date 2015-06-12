@@ -52,7 +52,6 @@ import java.io.IOException;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
@@ -98,7 +97,7 @@ public class NodeStatusTest {
         return mailer;
     }
 
-    @Test @Bug(23496) @Ignore //since 1.551
+    @Test @Bug(23496)
     public void notifyWhenSlaveBecomesAwailable() throws Exception {
         MailWatcherMailer mailer = mock(MailWatcherMailer.class);
         installAwailabilityListener(mailer);

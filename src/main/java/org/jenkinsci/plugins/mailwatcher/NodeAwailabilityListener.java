@@ -34,8 +34,6 @@ import hudson.model.listeners.RunListener;
 import hudson.slaves.OfflineCause;
 import hudson.tasks.Mailer;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,36 +95,13 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
         ;
     }
 
-    // TODO get rid of the once we bump Jenkins core dependency to 1.551+
-    private User user(Computer computer) {
-        Class<?> causeClass;
-        try {
-            causeClass = Class.forName("hudson.slaves.OfflineCause$UserCause");
-        } catch (ClassNotFoundException ex) {
-            // UserCause was introduced in 1.551. For earlier versions it would
-            // be necessary to parse the message and create the user instance.
-            // The notification is gracefully skipped instead.
-            return null;
-        }
+    private @CheckForNull User user(Computer computer) {
         OfflineCause cause = computer.getOfflineCause();
-
-        if (!causeClass.isAssignableFrom(cause.getClass())) return null;
-
-        try {
-            Method m = causeClass.getMethod("getUser");
-            Object user = m.invoke(computer.getOfflineCause());
-            return (User) user;
-        } catch (SecurityException ex) {
-            throw new AssertionError(ex);
-        } catch (IllegalArgumentException ex) {
-            throw new AssertionError(ex);
-        } catch (NoSuchMethodException ex) {
-            throw new AssertionError(ex);
-        } catch (IllegalAccessException ex) {
-            throw new AssertionError(ex);
-        } catch (InvocationTargetException ex) {
-            throw new AssertionError(ex);
+        if (cause instanceof OfflineCause.UserCause) {
+            return ((OfflineCause.UserCause) cause).getUser();
         }
+
+        return null;
     }
 
     private @CheckForNull Computer computer(Run<?, ?> r) {

@@ -56,7 +56,7 @@ public class WatcherNodePropertyTest {
     public void noAddressProvided() {
 
         final String expected = FormValidation
-                .error("Empty address list provided")
+                .warning("Empty address list provided")
                 .toString()
         ;
 

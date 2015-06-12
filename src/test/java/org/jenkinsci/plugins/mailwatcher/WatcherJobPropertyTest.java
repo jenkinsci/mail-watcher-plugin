@@ -47,7 +47,7 @@ public class WatcherJobPropertyTest {
     public void noAddressProvided() {
 
         assertEquals(
-                FormValidation.error("Empty address list provided").toString(),
+                FormValidation.warning("Empty address list provided").toString(),
                 descriptor.doCheckWatcherAddresses("").toString()
         );
     }
