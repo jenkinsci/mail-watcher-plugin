@@ -8,7 +8,7 @@
 
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>mail-watcher-plugin</artifactId>
-  <version>1.11</version>
+  <version>1.12-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Mail Watcher Plugin</name>
   <description>This plugin notifies configured email recipients on various events.</description>
@@ -25,7 +25,7 @@
     <connection>scm:git:git://github.com/jenkinsci/mail-watcher-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/mail-watcher-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/mail-watcher-plugin</url>
-    <tag>mail-watcher-plugin-1.11</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
