@@ -89,8 +89,11 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
 
         String address = user.getProperty(Mailer.UserProperty.class).getAddress();
 
-        getNotification().subject("Jenkins slave you have put offline is no longer occupied")
+        final String subject = "Jenkins computer '" + computer.getDisplayName() + "' you have put offline is no longer occupied";
+        getNotification().subject(subject)
+                .url(computer.getUrl())
                 .recipients(address)
+                .initiator(user)
                 .send(r)
         ;
     }

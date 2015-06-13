@@ -23,6 +23,8 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -126,7 +128,15 @@ public class NodeStatusTest {
 
         ArgumentCaptor<MailWatcherNotification> captor = ArgumentCaptor.forClass(MailWatcherNotification.class);
         verify(mailer).send(captor.capture());
-        assertEquals("a_user@example.com", captor.getValue().getRecipients());
+
+        final MailWatcherNotification notification = captor.getValue();
+        assertEquals("a_user@example.com", notification.getRecipients());
+        assertThat(notification.getUrl(), endsWith(slave.toComputer().getUrl()));
+        assertEquals(user, notification.getInitiator());
+        assertEquals(
+                "Jenkins computer '" + slave.getDisplayName() + "' you have put offline is no longer occupied",
+                notification.getSubject()
+        );
     }
 
     @Test @Bug(23496)

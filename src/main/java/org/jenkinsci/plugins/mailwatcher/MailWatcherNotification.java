@@ -105,7 +105,7 @@ public abstract class MailWatcherNotification {
         return jenkinsRootUrl + this.getUrl();
     }
 
-    private User getInitiator() {
+    public User getInitiator() {
 
         return initiator;
     }
