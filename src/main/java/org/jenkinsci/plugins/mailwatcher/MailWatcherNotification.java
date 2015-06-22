@@ -58,7 +58,7 @@ public abstract class MailWatcherNotification {
 
     final private String jenkinsRootUrl;
 
-    final private MailWatcherMailer mailer;
+    final protected MailWatcherMailer mailer;
 
     public MailWatcherNotification(final Builder builder) {
 

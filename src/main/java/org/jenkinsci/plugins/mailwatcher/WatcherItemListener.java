@@ -29,7 +29,6 @@ import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.listeners.ItemListener;
 
-import java.net.URL;
 import java.util.Map;
 import java.util.Stack;
 
@@ -105,12 +104,12 @@ public class WatcherItemListener extends ItemListener {
 
     private static class Notification extends MailWatcherNotification {
 
-        private final URL historyUrl;
+        private final @Nonnull Job<?, ?> job;
 
         public Notification(final Builder builder) {
 
             super(builder);
-            historyUrl = builder.historyUrl;
+            job = builder.job;
         }
 
         @Override
@@ -121,12 +120,12 @@ public class WatcherItemListener extends ItemListener {
 
         @Override
         protected @Nonnull Map<String, String> pairs() {
-
             final Map<String, String> pairs = super.pairs();
 
+            final String historyUrl = mailer.configHistory().lastChangeDiffUrl(job);
             if (historyUrl != null) {
 
-                pairs.put("Change", historyUrl.toString());
+                pairs.put("Change", mailer.absoluteUrl(historyUrl).toString());
             }
 
             return pairs;
@@ -134,7 +133,7 @@ public class WatcherItemListener extends ItemListener {
 
         private static class Builder extends MailWatcherNotification.Builder {
 
-            private URL historyUrl;
+            private Job<?, ?> job;
 
             public Builder(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
 
@@ -144,7 +143,7 @@ public class WatcherItemListener extends ItemListener {
             @Override
             public void send(final Object o) {
 
-                final Job<?, ?> job = (Job<?, ?>) o;
+                job = (Job<?, ?>) o;
 
                 final WatcherJobProperty property = job.getProperty(
                         WatcherJobProperty.class
@@ -169,12 +168,6 @@ public class WatcherItemListener extends ItemListener {
                 }
                 url(urlPath.toString());
                 name(job.getFullDisplayName());
-
-                final String url = mailer.configHistory().lastChangeDiffUrl(job);
-                if (url != null) {
-
-                    historyUrl = mailer.absoluteUrl(url);
-                }
 
                 new Notification(this).send();
             }

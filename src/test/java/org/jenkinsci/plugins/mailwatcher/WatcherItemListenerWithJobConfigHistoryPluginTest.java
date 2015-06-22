@@ -23,7 +23,8 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -62,10 +63,12 @@ public class WatcherItemListenerWithJobConfigHistoryPluginTest extends WatcherIt
     protected void checkBody() {
 
         super.checkBody();
-        assertThat(notification.getMailBody(), containsString(CONFIG_HISTORY_URL));
+        String change = notification.pairs().get("Change");
+        assertThat(change, startsWith(INSTANCE_URL));
+        assertThat(change, endsWith(CONFIG_HISTORY_URL));
     }
 
-    @Before
+    @Override @Before
     public void setUp() throws Exception {
 
         super.setUp();

@@ -46,6 +46,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -60,6 +61,7 @@ public class WatcherItemListenerTest {
 
     protected MailWatcherMailer mailer;
     protected MailWatcherNotification notification;
+    private ConfigHistory configHistory;
 
     private WatcherItemListener listener;
 
@@ -75,7 +77,8 @@ public class WatcherItemListenerTest {
         when(initiator.getId()).thenReturn(FAKE_INITIATOR);
         when(mailer.getDefaultInitiator()).thenReturn(initiator);
 
-        when(mailer.configHistory()).thenReturn(new ConfigHistory(null));
+        configHistory = mock(ConfigHistory.class);
+        when(mailer.configHistory()).thenReturn(configHistory);
 
         jobStub = getJobStub();
     }
@@ -151,6 +154,7 @@ public class WatcherItemListenerTest {
 
         listener.onDeleted(jobStub);
         assertFalse(captureNotification().shouldNotify());
+        Mockito.verifyZeroInteractions(configHistory);
     }
 
     @Test
@@ -162,6 +166,7 @@ public class WatcherItemListenerTest {
 
         listener.onRenamed(jobStub, "oldName", "newName");
         assertFalse(captureNotification().shouldNotify());
+        Mockito.verifyZeroInteractions(configHistory);
     }
 
     @Test
@@ -173,6 +178,7 @@ public class WatcherItemListenerTest {
 
         listener.onUpdated(jobStub);
         assertFalse(captureNotification().shouldNotify());
+        Mockito.verifyZeroInteractions(configHistory);
     }
 
     private Job<?, ?> getJobStub() {
