@@ -39,6 +39,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.Whitebox;
 
 public class MailWatcherMailerTest {
@@ -101,6 +102,24 @@ public class MailWatcherMailerTest {
 
         // MimeMessage reports To header when Reply-To is empty
         assertArrayEquals(InternetAddress.parse("admin@example.com"), msg.getReplyTo());
+    }
+
+    @Test
+    public void emptyRecipients() throws MessagingException {
+        builder().subject("Message subject")
+                .recipients("")
+                .send(null)
+        ;
+        verify(mailer, Mockito.never()).send(Mockito.any(MimeMessage.class));
+    }
+
+    @Test
+    public void nullRecipients() throws MessagingException {
+        builder().subject("Message subject")
+                .recipients(null)
+                .send(null)
+        ;
+        verify(mailer, Mockito.never()).send(Mockito.any(MimeMessage.class));
     }
 
     private MailWatcherNotification.Builder builder() {
