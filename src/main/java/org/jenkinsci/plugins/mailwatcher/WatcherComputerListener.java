@@ -104,10 +104,13 @@ public class WatcherComputerListener extends ComputerListener {
 
     @Override
     public void onTemporarilyOffline(final Computer c, final OfflineCause cause) {
-
+        String causeString = "";
+        if (cause!=null) {
+            causeString = cause.toString();
+        }
         getNotification().online(false)
                 .subject("marked temporarily offline")
-                .body(cause.toString())
+                .body(causeString)
                 .send(c)
         ;
     }
