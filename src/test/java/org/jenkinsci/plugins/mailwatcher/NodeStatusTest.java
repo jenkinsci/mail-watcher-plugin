@@ -99,6 +99,22 @@ public class NodeStatusTest {
         return mailer;
     }
 
+    @Test @Bug(30220)
+    public void notifyWhenSlaveBecomesOfflineWithoutCause() throws Exception {
+        MailWatcherMailer mailer = mock(MailWatcherMailer.class);
+        installComputerListener(mailer);
+
+        j.jenkins.getGlobalNodeProperties().add(new WatcherNodeProperty(
+                "on.online@mailinator.com", "on.offline@mailinator.com"
+        ));
+
+        final Computer computer = j.jenkins.toComputer();
+        computer.setTemporarilyOffline(true, null);
+        computer.setTemporarilyOffline(false, null);
+
+        assertNotified(mailer);
+    }
+
     @Test @Bug(23496)
     public void notifyWhenSlaveBecomesAwailable() throws Exception {
         MailWatcherMailer mailer = mock(MailWatcherMailer.class);
