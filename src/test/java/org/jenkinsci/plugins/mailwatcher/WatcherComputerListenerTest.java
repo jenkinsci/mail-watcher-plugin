@@ -73,7 +73,7 @@ public class WatcherComputerListenerTest {
     @Test
     public void onOffline() throws AddressException, MessagingException {
 
-        listener.onOffline(getComputerStub());
+        listener.onOffline(getComputerStub("", ""));
 
         final MailWatcherNotification notification = captureNotification();
 
@@ -85,9 +85,23 @@ public class WatcherComputerListenerTest {
     }
 
     @Test
+    public void onOfflineWithSubject() throws AddressException, MessagingException {
+
+        listener.onOffline(getComputerStub("", "offline subject"));
+
+        final MailWatcherNotification notification = captureNotification();
+
+        assertEquals("offline <recipient@list.com>", notification.getRecipients());
+        assertEquals("offline subject", notification.getMailSubject());
+        checkBody(notification);
+
+        assertTrue(notification.shouldNotify());
+    }
+
+    @Test
     public void onOnline() throws AddressException, MessagingException {
 
-        listener.onOnline(getComputerStub(), null);
+        listener.onOnline(getComputerStub("", ""), null);
 
         final MailWatcherNotification notification = captureNotification();
 
@@ -99,12 +113,26 @@ public class WatcherComputerListenerTest {
     }
 
     @Test
+    public void onOnlineWithSubject() throws AddressException, MessagingException {
+
+        listener.onOnline(getComputerStub("online subject", ""), null);
+
+        final MailWatcherNotification notification = captureNotification();
+
+        assertEquals("online <recipient@list.com>", notification.getRecipients());
+        assertEquals("online subject", notification.getMailSubject());
+        checkBody(notification);
+
+        assertTrue(notification.shouldNotify());
+    }
+
+    @Test
     public void onTemporarilyOffline() throws AddressException, MessagingException {
 
         final OfflineCause cause = mock(OfflineCause.class);
         when(cause.toString()).thenReturn("Mocked cause");
 
-        listener.onTemporarilyOffline(getComputerStub(), cause);
+        listener.onTemporarilyOffline(getComputerStub("", ""), cause);
 
         final MailWatcherNotification notification = captureNotification();
 
@@ -117,9 +145,27 @@ public class WatcherComputerListenerTest {
     }
 
     @Test
+    public void onTemporarilyOfflineWithSubject() throws AddressException, MessagingException {
+
+        final OfflineCause cause = mock(OfflineCause.class);
+        when(cause.toString()).thenReturn("Mocked cause");
+
+        listener.onTemporarilyOffline(getComputerStub("", "offline subject"), cause);
+
+        final MailWatcherNotification notification = captureNotification();
+
+        assertEquals("offline <recipient@list.com>", notification.getRecipients());
+        assertEquals("offline subject", notification.getMailSubject());
+        assertThat(notification.getMailBody(), containsString("Mocked cause"));
+        checkBody(notification);
+
+        assertTrue(notification.shouldNotify());
+    }
+
+    @Test
     public void onTemporarilyOnline() throws AddressException, MessagingException {
 
-        listener.onTemporarilyOnline(getComputerStub());
+        listener.onTemporarilyOnline(getComputerStub("", ""));
 
         final MailWatcherNotification notification = captureNotification();
 
@@ -130,10 +176,24 @@ public class WatcherComputerListenerTest {
         assertTrue(notification.shouldNotify());
     }
 
-    private Computer getComputerStub() {
+    @Test
+    public void onTemporarilyOnlineWithSubject() throws AddressException, MessagingException {
+
+        listener.onTemporarilyOnline(getComputerStub("online subject", ""));
+
+        final MailWatcherNotification notification = captureNotification();
+
+        assertEquals("online <recipient@list.com>", notification.getRecipients());
+        assertEquals("online subject", notification.getMailSubject());
+        checkBody(notification);
+
+        assertTrue(notification.shouldNotify());
+    }
+
+    private Computer getComputerStub(String onlineSubject, String offlineSubject) {
 
         final Computer computerStub = mock(Computer.class);
-        final Node nodeStub = getNodeStub();
+        final Node nodeStub = getNodeStub(onlineSubject, offlineSubject);
 
         when(computerStub.getDisplayName()).thenReturn("cmpName");
         when(computerStub.getUrl()).thenReturn("fake/computer/url");
@@ -142,12 +202,12 @@ public class WatcherComputerListenerTest {
         return computerStub;
     }
 
-    private Node getNodeStub() {
+    private Node getNodeStub(String onlineSubject, String offlineSubject) {
 
         final Node nodeStub = mock(Node.class);
 
         final WatcherNodeProperty property = new WatcherNodeProperty(
-                "online <recipient@list.com>", "offline <recipient@list.com>"
+                "online <recipient@list.com>", "offline <recipient@list.com>", onlineSubject, offlineSubject
         );
 
         when(nodeStub.getNodeProperties()).thenReturn(getPropertiesList(property));

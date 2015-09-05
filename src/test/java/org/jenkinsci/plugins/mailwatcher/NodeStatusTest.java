@@ -72,7 +72,7 @@ public class NodeStatusTest {
         installComputerListener(mailer);
 
         j.jenkins.getGlobalNodeProperties().add(new WatcherNodeProperty(
-                "on.online@mailinator.com", "on.offline@mailinator.com"
+                "on.online@mailinator.com", "on.offline@mailinator.com", "", ""
         ));
 
         OfflineCause cause = new OfflineCause.ByCLI("");
@@ -105,7 +105,7 @@ public class NodeStatusTest {
         installComputerListener(mailer);
 
         j.jenkins.getGlobalNodeProperties().add(new WatcherNodeProperty(
-                "on.online@mailinator.com", "on.offline@mailinator.com"
+                "on.online@mailinator.com", "on.offline@mailinator.com", "", ""
         ));
 
         final Computer computer = j.jenkins.toComputer();

@@ -30,4 +30,12 @@ THE SOFTWARE.
     <f:entry field="offlineAddresses" title="${%Notify on offline}">
         <f:textbox/>
     </f:entry>
+    <f:advanced>
+        <f:entry field="onlineSubject" title="${%Override Default Subject on online}">
+            <f:textbox/>
+        </f:entry>
+        <f:entry field="offlineSubject" title="${%Override Default Subject on offline}">
+            <f:textbox/>
+        </f:entry>
+    </f:advanced>
 </j:jelly>

@@ -34,6 +34,9 @@ public class WatcherNodePropertyTest {
 
     private static final String OFFLINE = "offline <ogondza@redhat.com>";
     private static final String ONLINE = "online <ogondza@redhat.com>";
+    private static final String ONLINE_SUBJECT = "online subject";
+    private static final String OFFLINE_SUBJECT = "offline subject";
+
     private WatcherNodeProperty.DescriptorImpl descriptor =
             new WatcherNodeProperty.DescriptorImpl()
    ;
@@ -108,44 +111,86 @@ public class WatcherNodePropertyTest {
     }
 
     @Test
-    public void instantiateUsingBothAddresses() throws FormException {
+         public void instantiateUsingBothAddresses() throws FormException {
 
-        final WatcherNodeProperty prop = getInstanceFor(ONLINE, OFFLINE);
+        final WatcherNodeProperty prop = getInstanceFor(ONLINE, OFFLINE, "", "");
 
         assertEquals(ONLINE, prop.getOnlineAddresses());
         assertEquals(OFFLINE, prop.getOfflineAddresses());
+        assertEquals("", prop.getOnlineSubject());
+        assertEquals("", prop.getOfflineSubject());
+    }
+
+    @Test
+    public void instantiateUsingBothAddressesAndSubjects() throws FormException {
+
+        final WatcherNodeProperty prop = getInstanceFor(ONLINE, OFFLINE, ONLINE_SUBJECT, OFFLINE_SUBJECT);
+
+        assertEquals(ONLINE, prop.getOnlineAddresses());
+        assertEquals(OFFLINE, prop.getOfflineAddresses());
+        assertEquals(ONLINE_SUBJECT, prop.getOnlineSubject());
+        assertEquals(OFFLINE_SUBJECT, prop.getOfflineSubject());
     }
 
     @Test
     public void instantiateUsingOnlineAddress() throws FormException {
 
-        WatcherNodeProperty prop = getInstanceFor(ONLINE, "");
+        WatcherNodeProperty prop = getInstanceFor(ONLINE, "", "", "");
 
         assertEquals(ONLINE, prop.getOnlineAddresses());
         assertEquals("", prop.getOfflineAddresses());
+        assertEquals("", prop.getOnlineSubject());
+        assertEquals("", prop.getOfflineSubject());
+    }
+
+    @Test
+    public void instantiateUsingOnlineAddressAndOnlineSubject() throws FormException {
+
+        WatcherNodeProperty prop = getInstanceFor(ONLINE, "", ONLINE_SUBJECT, "");
+
+        assertEquals("", prop.getOnlineAddresses());
+        assertEquals(OFFLINE, prop.getOfflineAddresses());
+        assertEquals(ONLINE_SUBJECT, prop.getOnlineSubject());
+        assertEquals("", prop.getOfflineSubject());
     }
 
     @Test
     public void instantiateUsingOfflineAddress() throws FormException {
 
-        WatcherNodeProperty prop = getInstanceFor("", OFFLINE);
+        WatcherNodeProperty prop = getInstanceFor("", OFFLINE, "", "");
 
         assertEquals("", prop.getOnlineAddresses());
         assertEquals(OFFLINE, prop.getOfflineAddresses());
+        assertEquals("", prop.getOnlineSubject());
+        assertEquals("", prop.getOfflineSubject());
+    }
+
+    @Test
+    public void instantiateUsingOfflineAddressAndOfflineSubject() throws FormException {
+
+        WatcherNodeProperty prop = getInstanceFor("", OFFLINE, "", OFFLINE_SUBJECT);
+
+        assertEquals("", prop.getOnlineAddresses());
+        assertEquals(OFFLINE, prop.getOfflineAddresses());
+        assertEquals("", prop.getOnlineSubject());
+        assertEquals(OFFLINE_SUBJECT, prop.getOfflineSubject());
     }
 
     @Test
     public void doNotInstantiateWithoutAnyAddress() throws FormException {
 
-        assertEquals(null, getInstanceFor("", ""));
+        assertEquals(null, getInstanceFor("", "", "", ""));
     }
 
-    private WatcherNodeProperty getInstanceFor(final String online, final String offline) throws FormException {
+    private WatcherNodeProperty getInstanceFor(final String online, final String offline, final String onlineSubject,
+                                               final String offlineSubject) throws FormException {
 
         final JSONObject input = new JSONObject();
 
         input.accumulate(WatcherNodeProperty.DescriptorImpl.ONLINE_ADDRESSES, online);
         input.accumulate(WatcherNodeProperty.DescriptorImpl.OFFLINE_ADDRESSES, offline);
+        input.accumulate(WatcherNodeProperty.DescriptorImpl.OFFLINE_SUBJECT, onlineSubject);
+        input.accumulate(WatcherNodeProperty.DescriptorImpl.OFFLINE_SUBJECT, offlineSubject);
 
         return (WatcherNodeProperty) descriptor.newInstance(null, input);
     }

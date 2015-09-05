@@ -170,6 +170,12 @@ public class WatcherComputerListener extends ComputerListener {
                             ? property.getOnlineAddresses()
                             : property.getOfflineAddresses()
                     ;
+                    final String tempSubject = this.online
+                            ? property.getOnlineSubject()
+                            : property.getOfflineSubject()
+                    ;
+                    if (tempSubject != null && ! tempSubject.equals("")) this.subject(tempSubject);
+
                     this.recipients(recipients);
                 }
 

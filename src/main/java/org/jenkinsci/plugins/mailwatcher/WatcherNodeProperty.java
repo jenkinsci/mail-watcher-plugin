@@ -44,14 +44,19 @@ public class WatcherNodeProperty extends NodeProperty<Node> {
 
     private final String onlineAddresses;
     private final String offlineAddresses;
+    private final String onlineSubject;
+    private final String offlineSubject;
 
     @DataBoundConstructor
     public WatcherNodeProperty(
-            final String onlineAddresses, final String offlineAddresses
+            final String onlineAddresses, final String offlineAddresses,
+            final String onlineSubject, final String offlineSubject
     ) {
 
         this.onlineAddresses = onlineAddresses;
         this.offlineAddresses = offlineAddresses;
+        this.onlineSubject = onlineSubject;
+        this.offlineSubject = offlineSubject;
     }
 
     public String getOnlineAddresses() {
@@ -64,11 +69,24 @@ public class WatcherNodeProperty extends NodeProperty<Node> {
         return offlineAddresses;
     }
 
+    public String getOnlineSubject() {
+
+        return onlineSubject;
+    }
+
+    public String getOfflineSubject() {
+
+        return offlineSubject;
+    }
+
     @Extension
     public static class DescriptorImpl extends NodePropertyDescriptor {
 
         public static final String OFFLINE_ADDRESSES = "offlineAddresses";
         public static final String ONLINE_ADDRESSES = "onlineAddresses";
+        public static final String ONLINE_SUBJECT = "onlineSubject";
+        public static final String OFFLINE_SUBJECT = "offlineSubject";
+
 
         @Override
         public boolean isApplicable(Class<? extends Node> nodeType) {
@@ -84,13 +102,16 @@ public class WatcherNodeProperty extends NodeProperty<Node> {
 
             final String onlineAddresses = formData.getString(ONLINE_ADDRESSES);
             final String offlineAddresses = formData.getString(OFFLINE_ADDRESSES);
+            final String onlineSubject = formData.getString(ONLINE_SUBJECT);
+            final String offlineSubject = formData.getString(OFFLINE_SUBJECT);
+
 
             assert onlineAddresses != null;
             assert offlineAddresses != null;
 
             if (onlineAddresses.isEmpty() && offlineAddresses.isEmpty()) return null;
 
-            return new WatcherNodeProperty(onlineAddresses, offlineAddresses);
+            return new WatcherNodeProperty(onlineAddresses, offlineAddresses, onlineSubject, offlineSubject);
         }
 
         public FormValidation doCheckOnlineAddresses(@QueryParameter String value) {
