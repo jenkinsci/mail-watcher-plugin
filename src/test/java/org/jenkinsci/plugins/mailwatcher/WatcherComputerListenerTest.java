@@ -52,6 +52,8 @@ public class WatcherComputerListenerTest {
 
     private static final String FAKE_COMPUTER_URL = "http://example.com/my-jenkins/fake/computer/url";
     private static final String FAKE_INITIATOR = "someone@example.com";
+    private static final String ONLINE_SUBJECT = "ONLINE SUBJECT";
+    private static final String OFFLINE_SUBJECT = "OFFLINE SUBJECT";
 
     final private NodeDescriptor desc = mock(NodeDescriptor.class);
 
@@ -87,12 +89,12 @@ public class WatcherComputerListenerTest {
     @Test
     public void onOfflineWithSubject() throws AddressException, MessagingException {
 
-        listener.onOffline(getComputerStub("", "offline subject"));
+        listener.onOffline(getComputerStub("", OFFLINE_SUBJECT));
 
         final MailWatcherNotification notification = captureNotification();
 
         assertEquals("offline <recipient@list.com>", notification.getRecipients());
-        assertEquals("offline subject", notification.getMailSubject());
+        assertEquals("mail-watcher-plugin: Computer cmpName " + OFFLINE_SUBJECT, notification.getMailSubject());
         checkBody(notification);
 
         assertTrue(notification.shouldNotify());
@@ -115,12 +117,12 @@ public class WatcherComputerListenerTest {
     @Test
     public void onOnlineWithSubject() throws AddressException, MessagingException {
 
-        listener.onOnline(getComputerStub("online subject", ""), null);
+        listener.onOnline(getComputerStub(ONLINE_SUBJECT, ""), null);
 
         final MailWatcherNotification notification = captureNotification();
 
         assertEquals("online <recipient@list.com>", notification.getRecipients());
-        assertEquals("online subject", notification.getMailSubject());
+        assertEquals("mail-watcher-plugin: Computer cmpName " + ONLINE_SUBJECT, notification.getMailSubject());
         checkBody(notification);
 
         assertTrue(notification.shouldNotify());
@@ -150,12 +152,12 @@ public class WatcherComputerListenerTest {
         final OfflineCause cause = mock(OfflineCause.class);
         when(cause.toString()).thenReturn("Mocked cause");
 
-        listener.onTemporarilyOffline(getComputerStub("", "offline subject"), cause);
+        listener.onTemporarilyOffline(getComputerStub("", OFFLINE_SUBJECT), cause);
 
         final MailWatcherNotification notification = captureNotification();
 
         assertEquals("offline <recipient@list.com>", notification.getRecipients());
-        assertEquals("offline subject", notification.getMailSubject());
+        assertEquals("mail-watcher-plugin: Computer cmpName " + OFFLINE_SUBJECT, notification.getMailSubject());
         assertThat(notification.getMailBody(), containsString("Mocked cause"));
         checkBody(notification);
 
@@ -179,12 +181,12 @@ public class WatcherComputerListenerTest {
     @Test
     public void onTemporarilyOnlineWithSubject() throws AddressException, MessagingException {
 
-        listener.onTemporarilyOnline(getComputerStub("online subject", ""));
+        listener.onTemporarilyOnline(getComputerStub(ONLINE_SUBJECT, ""));
 
         final MailWatcherNotification notification = captureNotification();
 
         assertEquals("online <recipient@list.com>", notification.getRecipients());
-        assertEquals("online subject", notification.getMailSubject());
+        assertEquals("mail-watcher-plugin: Computer cmpName " + ONLINE_SUBJECT, notification.getMailSubject());
         checkBody(notification);
 
         assertTrue(notification.shouldNotify());
