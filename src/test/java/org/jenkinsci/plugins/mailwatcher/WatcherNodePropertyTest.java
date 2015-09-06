@@ -148,8 +148,8 @@ public class WatcherNodePropertyTest {
 
         WatcherNodeProperty prop = getInstanceFor(ONLINE, "", ONLINE_SUBJECT, "");
 
-        assertEquals("", prop.getOnlineAddresses());
-        assertEquals(OFFLINE, prop.getOfflineAddresses());
+        assertEquals(ONLINE, prop.getOnlineAddresses());
+        assertEquals("", prop.getOfflineAddresses());
         assertEquals(ONLINE_SUBJECT, prop.getOnlineSubject());
         assertEquals("", prop.getOfflineSubject());
     }
@@ -189,7 +189,7 @@ public class WatcherNodePropertyTest {
 
         input.accumulate(WatcherNodeProperty.DescriptorImpl.ONLINE_ADDRESSES, online);
         input.accumulate(WatcherNodeProperty.DescriptorImpl.OFFLINE_ADDRESSES, offline);
-        input.accumulate(WatcherNodeProperty.DescriptorImpl.OFFLINE_SUBJECT, onlineSubject);
+        input.accumulate(WatcherNodeProperty.DescriptorImpl.ONLINE_SUBJECT, onlineSubject);
         input.accumulate(WatcherNodeProperty.DescriptorImpl.OFFLINE_SUBJECT, offlineSubject);
 
         return (WatcherNodeProperty) descriptor.newInstance(null, input);
