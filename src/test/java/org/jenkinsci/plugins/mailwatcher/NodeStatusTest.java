@@ -56,7 +56,7 @@ import javax.mail.internet.AddressException;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.SingleFileSCM;
 import org.mockito.ArgumentCaptor;
@@ -99,7 +99,7 @@ public class NodeStatusTest {
         return mailer;
     }
 
-    @Test @Bug(30220)
+    @Test @Issue("JENKINS-30220")
     public void notifyWhenSlaveBecomesOfflineWithoutCause() throws Exception {
         MailWatcherMailer mailer = mock(MailWatcherMailer.class);
         installComputerListener(mailer);
@@ -115,7 +115,7 @@ public class NodeStatusTest {
         assertNotified(mailer);
     }
 
-    @Test @Bug(23496)
+    @Test @Issue("JENKINS-23496")
     public void notifyWhenSlaveBecomesAwailable() throws Exception {
         MailWatcherMailer mailer = mock(MailWatcherMailer.class);
         installAwailabilityListener(mailer);
@@ -155,7 +155,7 @@ public class NodeStatusTest {
         );
     }
 
-    @Test @Bug(23496)
+    @Test @Issue("JENKINS-23496")
     public void doNotNotifySlaveAvailabilityWhenNotPutOfflineByUser() throws Exception {
         MailWatcherMailer mailer = mock(MailWatcherMailer.class);
         installAwailabilityListener(mailer);
@@ -182,7 +182,7 @@ public class NodeStatusTest {
         verify(mailer, never()).send(any(MailWatcherNotification.class));
     }
 
-    @Test @Bug(28888)
+    @Test @Issue("JENKINS-28888")
     public void correctlyIdentifySlave() throws Exception {
         MavenInstallation maven = j.configureMaven3();
         MavenModuleSet mp = j.createMavenProject();
@@ -197,7 +197,7 @@ public class NodeStatusTest {
 
     private static final class SomeOfflineCause extends OfflineCause {}
 
-    @Test @Bug(23496)
+    @Test @Issue("JENKINS-23496")
     public void doNotNotifySlaveAvailabilityWhenNotAwailable() throws Exception {
         MailWatcherMailer mailer = mock(MailWatcherMailer.class);
         installAwailabilityListener(mailer);
