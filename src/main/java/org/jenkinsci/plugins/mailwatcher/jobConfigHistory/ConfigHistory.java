@@ -55,7 +55,7 @@ public class ConfigHistory {
 
         return String.format(
                 "%sjobConfigHistory/showDiffFiles?timestamp1=%s&timestamp2=%s",
-                job.getShortUrl(), configs.get(0).getDate(), configs.get(1).getDate()
+                job.getShortUrl(), configs.get(1).getDate(), configs.get(0).getDate()
         );
     }
 

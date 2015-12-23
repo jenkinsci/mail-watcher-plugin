@@ -56,7 +56,7 @@ public class WatcherItemListenerWithJobConfigHistoryPluginTest extends WatcherIt
 
     private static final String CONFIG_HISTORY_URL = String.format(
             "jobConfigHistory/showDiffFiles?timestamp1=%s&timestamp2=%s",
-            LHS_TIMESTAMP, RHS_TIMESTAMP
+            RHS_TIMESTAMP, LHS_TIMESTAMP
     );
 
     @Override
