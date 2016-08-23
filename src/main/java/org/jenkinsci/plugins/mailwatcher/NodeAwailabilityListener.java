@@ -34,6 +34,8 @@ import hudson.model.listeners.RunListener;
 import hudson.slaves.OfflineCause;
 import hudson.tasks.Mailer;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,6 +47,10 @@ import jenkins.model.Jenkins;
 public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
 
     private static final Logger LOGGER = Logger.getLogger(NodeAwailabilityListener.class.getName());
+
+    private static final List<String> IGNORED_CLASSES = Arrays.asList(
+        "org.jenkinsci.plugins.workflow.job.WorkflowRun"
+    );
 
     private final MailWatcherMailer mailer;
     private final String jenkinsRootUrl;
@@ -70,8 +76,16 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
         this.jenkinsRootUrl = jenkinsRootUrl;
     }
 
+    private boolean isIgnoredRunClass(Run<?, ?> r) {
+        String runClassName = r.getClass().getCanonicalName();
+        return IGNORED_CLASSES.contains(runClassName);
+    }
+
     @Override
     public void onFinalized(Run<?, ?> r) {
+        if (isIgnoredRunClass(r)) {
+            return;
+        }
 
         Computer computer = computer(r);
         if (computer == null) {
@@ -114,11 +128,6 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
                 return node.toComputer();
             }
         }
-
-        // There are 2 alternatives to try as a fallback. Let's see if it is necessary.
-        // r.getExecutor().getOwner();
-        // And
-        // ((Executor) Thread.currentThread()).getOwner();
         return null;
     }
 
