@@ -59,10 +59,15 @@ import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.SingleFileSCM;
+import org.jvnet.hudson.test.ToolInstallations;
 import org.mockito.ArgumentCaptor;
 import org.mockito.internal.util.reflection.Whitebox;
 
 public class NodeStatusTest {
+
+    static {
+        System.setProperty("hudson.model.User.allowNonExistentUserToLogin", "true");
+    }
 
     @Rule public JenkinsRule j = new JenkinsRule();
 
@@ -184,8 +189,8 @@ public class NodeStatusTest {
 
     @Test @Issue("JENKINS-28888")
     public void correctlyIdentifySlave() throws Exception {
-        MavenInstallation maven = j.configureMaven3();
-        MavenModuleSet mp = j.createMavenProject();
+        MavenInstallation maven = ToolInstallations.configureMaven3();
+        MavenModuleSet mp = j.createProject(MavenModuleSet.class);
         mp.setGoals("clean");
         mp.setMaven(maven.getName());
         mp.setScm(new SingleFileSCM("pom.xml",
