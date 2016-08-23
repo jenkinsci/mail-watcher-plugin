@@ -146,7 +146,7 @@ public abstract class MailWatcherNotification {
 
     private String pair(final String key, final String value) {
 
-        return String.format("%s: %s\n", key, value);
+        return String.format("%s: %s%n", key, value);
     }
 
     public final void send() {
