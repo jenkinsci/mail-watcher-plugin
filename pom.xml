@@ -14,13 +14,6 @@
   <description>This plugin notifies configured email recipients on various events.</description>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Mail+Watcher+Plugin</url>
 
-  <developers>
-    <developer>
-      <id>olivergondza</id>
-      <name>Oliver Gondža</name>
-      <email>ogondza@gmail.com</email>
-    </developer>
-  </developers>
   <scm>
     <connection>scm:git:git://github.com/jenkinsci/mail-watcher-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/mail-watcher-plugin.git</developerConnection>
