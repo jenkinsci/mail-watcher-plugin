@@ -53,8 +53,8 @@ public class WatcherComputerListener extends ComputerListener {
     public WatcherComputerListener() {
 
         this(
-                new MailWatcherMailer(Jenkins.getInstance()),
-                Jenkins.getInstance().getRootUrl()
+                new MailWatcherMailer(Jenkins.get()),
+                Jenkins.get().getRootUrl()
         );
     }
 

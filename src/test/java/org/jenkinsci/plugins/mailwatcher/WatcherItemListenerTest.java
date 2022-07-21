@@ -26,9 +26,9 @@ package org.jenkinsci.plugins.mailwatcher;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -38,8 +38,7 @@ import hudson.model.AbstractItem;
 import hudson.model.Job;
 import hudson.model.User;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
+import jakarta.mail.MessagingException;
 
 import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
 import org.junit.Before;
@@ -84,7 +83,7 @@ public class WatcherItemListenerTest {
     }
 
     @Test
-    public void onRenamed() throws AddressException, MessagingException {
+    public void onRenamed() throws MessagingException {
 
         PowerMockito.when(jobStub.getFullDisplayName()).thenReturn("newName");
 
@@ -100,7 +99,7 @@ public class WatcherItemListenerTest {
     }
 
     @Test
-    public void onUpdated() throws AddressException, MessagingException {
+    public void onUpdated() throws MessagingException {
 
         PowerMockito.when(jobStub.getFullDisplayName()).thenReturn("updated_job_name");
 
@@ -116,7 +115,7 @@ public class WatcherItemListenerTest {
     }
 
     @Test
-    public void onDeleted() throws AddressException, MessagingException {
+    public void onDeleted() throws MessagingException {
 
         PowerMockito.when(jobStub.getFullDisplayName()).thenReturn("deleted_job_name");
 
@@ -132,7 +131,7 @@ public class WatcherItemListenerTest {
     }
 
     @Test
-    public void ignoreItemsThatAreNotJobs() throws AddressException, MessagingException {
+    public void ignoreItemsThatAreNotJobs() throws MessagingException {
 
         final Item itemStub = mock(Item.class);
 
@@ -146,7 +145,7 @@ public class WatcherItemListenerTest {
     }
 
     @Test
-    public void doNothingIfThereAreNoRecipientsDeleted() throws AddressException, MessagingException {
+    public void doNothingIfThereAreNoRecipientsDeleted() throws MessagingException {
 
         when(jobStub.getProperty(WatcherJobProperty.class))
                 .thenReturn(null)
@@ -154,11 +153,11 @@ public class WatcherItemListenerTest {
 
         listener.onDeleted(jobStub);
         assertFalse(captureNotification().shouldNotify());
-        Mockito.verifyZeroInteractions(configHistory);
+        Mockito.verifyNoInteractions(configHistory);
     }
 
     @Test
-    public void doNothingIfThereAreNoRecipientsRenamed() throws AddressException, MessagingException {
+    public void doNothingIfThereAreNoRecipientsRenamed() throws MessagingException {
 
         when(jobStub.getProperty(WatcherJobProperty.class))
                 .thenReturn(null)
@@ -166,11 +165,11 @@ public class WatcherItemListenerTest {
 
         listener.onRenamed(jobStub, "oldName", "newName");
         assertFalse(captureNotification().shouldNotify());
-        Mockito.verifyZeroInteractions(configHistory);
+        Mockito.verifyNoInteractions(configHistory);
     }
 
     @Test
-    public void doNothingIfThereAreNoRecipientsUpdated() throws AddressException, MessagingException {
+    public void doNothingIfThereAreNoRecipientsUpdated() throws MessagingException {
 
         when(jobStub.getProperty(WatcherJobProperty.class))
                 .thenReturn(null)
@@ -178,7 +177,7 @@ public class WatcherItemListenerTest {
 
         listener.onUpdated(jobStub);
         assertFalse(captureNotification().shouldNotify());
-        Mockito.verifyZeroInteractions(configHistory);
+        Mockito.verifyNoInteractions(configHistory);
     }
 
     private Job<?, ?> getJobStub() {
@@ -194,7 +193,7 @@ public class WatcherItemListenerTest {
         return jobStub;
     }
 
-    private MailWatcherNotification captureNotification() throws AddressException, MessagingException {
+    private MailWatcherNotification captureNotification() throws MessagingException {
 
         ArgumentCaptor<MailWatcherNotification> argument = ArgumentCaptor
                 .forClass(MailWatcherNotification.class)

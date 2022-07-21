@@ -60,7 +60,7 @@ public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
 
         @Override
         public boolean isApplicable(
-                @SuppressWarnings("rawtypes") Class<? extends Job> jobType
+                Class<? extends Job> jobType
         ) {
 
             return true;

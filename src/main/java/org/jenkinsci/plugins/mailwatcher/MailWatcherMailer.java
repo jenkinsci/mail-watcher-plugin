@@ -35,12 +35,12 @@ import java.util.Date;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 
 import jenkins.model.Jenkins;
 
@@ -102,7 +102,7 @@ public class MailWatcherMailer {
      * @return sent MimeMessage or null if notification was not sent
      */
     public MimeMessage send(final MailWatcherNotification notification) throws
-            MessagingException, AddressException
+            MessagingException
     {
 
         if (!notification.shouldNotify()) return null;

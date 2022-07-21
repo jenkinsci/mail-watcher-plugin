@@ -35,7 +35,7 @@ import hudson.model.listeners.RunListener;
 import hudson.slaves.OfflineCause;
 import hudson.tasks.Mailer;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,7 +49,7 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
 
     private static final Logger LOGGER = Logger.getLogger(NodeAwailabilityListener.class.getName());
 
-    private static final List<String> IGNORED_CLASSES = Arrays.asList(
+    private static final List<String> IGNORED_CLASSES = Collections.singletonList(
         "org.jenkinsci.plugins.workflow.job.WorkflowRun"
     );
 
@@ -60,8 +60,8 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
     public NodeAwailabilityListener() {
 
         this(
-                new MailWatcherMailer(Jenkins.getInstance()),
-                Jenkins.getInstance().getRootUrl()
+                new MailWatcherMailer(Jenkins.get()),
+                Jenkins.get().getRootUrl()
         );
     }
 

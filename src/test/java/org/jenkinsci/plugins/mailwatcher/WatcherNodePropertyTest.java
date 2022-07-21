@@ -24,6 +24,8 @@
 package org.jenkinsci.plugins.mailwatcher;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import hudson.model.Descriptor.FormException;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
@@ -137,7 +139,7 @@ public class WatcherNodePropertyTest {
     @Test
     public void doNotInstantiateWithoutAnyAddress() throws FormException {
 
-        assertEquals(null, getInstanceFor("", ""));
+        assertNull(getInstanceFor("", ""));
     }
 
     private WatcherNodeProperty getInstanceFor(final String online, final String offline) throws FormException {

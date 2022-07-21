@@ -25,7 +25,7 @@ package org.jenkinsci.plugins.mailwatcher;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -41,8 +41,7 @@ import hudson.util.DescribableList;
 
 import java.util.Arrays;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
+import jakarta.mail.MessagingException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +70,7 @@ public class WatcherComputerListenerTest {
     }
 
     @Test
-    public void onOffline() throws AddressException, MessagingException {
+    public void onOffline() throws MessagingException {
 
         listener.onOffline(getComputerStub());
 
@@ -85,7 +84,7 @@ public class WatcherComputerListenerTest {
     }
 
     @Test
-    public void onOnline() throws AddressException, MessagingException {
+    public void onOnline() throws MessagingException {
 
         listener.onOnline(getComputerStub(), null);
 
@@ -99,7 +98,7 @@ public class WatcherComputerListenerTest {
     }
 
     @Test
-    public void onTemporarilyOffline() throws AddressException, MessagingException {
+    public void onTemporarilyOffline() throws MessagingException {
 
         final OfflineCause cause = mock(OfflineCause.class);
         when(cause.toString()).thenReturn("Mocked cause");
@@ -117,7 +116,7 @@ public class WatcherComputerListenerTest {
     }
 
     @Test
-    public void onTemporarilyOnline() throws AddressException, MessagingException {
+    public void onTemporarilyOnline() throws MessagingException {
 
         listener.onTemporarilyOnline(getComputerStub());
 
@@ -159,12 +158,12 @@ public class WatcherComputerListenerTest {
             final NodeProperty<Node>... properties
     ) {
 
-        return new DescribableList<NodeProperty<?>, NodePropertyDescriptor>(
+        return new DescribableList<>(
                 desc, Arrays.asList(properties)
         );
     }
 
-    private MailWatcherNotification captureNotification() throws AddressException, MessagingException {
+    private MailWatcherNotification captureNotification() throws MessagingException {
 
         ArgumentCaptor<MailWatcherNotification> argument = ArgumentCaptor
                 .forClass(MailWatcherNotification.class)

@@ -31,9 +31,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.MimeMessage;
 
 /**
  * Abstract notification for Jenkins.
@@ -137,7 +137,7 @@ public abstract class MailWatcherNotification {
 
     protected @Nonnull Map<String, String> pairs() {
 
-        final Map<String, String> pairs = new HashMap<String, String>(2);
+        final Map<String, String> pairs = new HashMap<>(2);
         pairs.put("Url", this.getArtefactUrl());
         pairs.put("Initiator", this.getInitiator().getId());
 

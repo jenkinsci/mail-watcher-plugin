@@ -55,8 +55,8 @@ public class WatcherItemListener extends ItemListener {
     public WatcherItemListener() {
 
         this(
-                new MailWatcherMailer(Jenkins.getInstance()),
-                Jenkins.getInstance().getRootUrl()
+                new MailWatcherMailer(Jenkins.get()),
+                Jenkins.get().getRootUrl()
         );
     }
 
@@ -156,9 +156,9 @@ public class WatcherItemListener extends ItemListener {
                     recipients(property.getWatcherAddresses());
                 }
 
-                Stack<String> stack = new Stack<String>();
+                Stack<String> stack = new Stack<>();
                 stack.push(job.getShortUrl());
-                ItemGroup parent = job.getParent();
+                ItemGroup<?> parent = job.getParent();
                 while (parent != null && parent instanceof Item) {
                     Item item = (Item) parent;
                     stack.push(item.getShortUrl());
