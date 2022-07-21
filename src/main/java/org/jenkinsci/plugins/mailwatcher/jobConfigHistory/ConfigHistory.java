@@ -65,13 +65,6 @@ public class ConfigHistory {
 
         if (action == null) return null;
 
-        try {
-
-            return action.getJobConfigs();
-        } catch (IOException ex) {
-
-            ex.printStackTrace();
-            return null;
-        }
+        return action.getJobConfigs();
     }
 }
