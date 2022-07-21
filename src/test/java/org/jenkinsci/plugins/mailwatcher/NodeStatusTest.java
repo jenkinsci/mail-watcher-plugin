@@ -26,7 +26,7 @@ package org.jenkinsci.plugins.mailwatcher;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -51,8 +51,7 @@ import hudson.util.OneShotEvent;
 
 import java.io.IOException;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
+import jakarta.mail.MessagingException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,7 +60,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.SingleFileSCM;
 import org.jvnet.hudson.test.ToolInstallations;
 import org.mockito.ArgumentCaptor;
-import org.mockito.internal.util.reflection.Whitebox;
+import org.powermock.reflect.Whitebox;
 
 public class NodeStatusTest {
 
@@ -88,7 +87,7 @@ public class NodeStatusTest {
         assertNotified(mailer);
     }
 
-    private void assertNotified(MailWatcherMailer mailer) throws MessagingException, AddressException {
+    private void assertNotified(MailWatcherMailer mailer) throws MessagingException {
         ArgumentCaptor<MailWatcherNotification> captor = ArgumentCaptor.forClass(MailWatcherNotification.class);
         verify(mailer, times(2)).send(captor.capture());
 
@@ -189,7 +188,7 @@ public class NodeStatusTest {
 
     @Test @Issue("JENKINS-28888")
     public void correctlyIdentifySlave() throws Exception {
-        MavenInstallation maven = ToolInstallations.configureMaven3();
+        MavenInstallation maven = ToolInstallations.configureMaven35();
         MavenModuleSet mp = j.createProject(MavenModuleSet.class);
         mp.setGoals("clean");
         mp.setMaven(maven.getName());
@@ -252,7 +251,7 @@ public class NodeStatusTest {
         @Override
         public boolean perform(
                 AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener
-        ) throws InterruptedException, IOException {
+        ) throws InterruptedException {
 
             started.signal();
             running.block();

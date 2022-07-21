@@ -25,7 +25,7 @@ package org.jenkinsci.plugins.mailwatcher;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import hudson.plugins.jobConfigHistory.ConfigInfo;
