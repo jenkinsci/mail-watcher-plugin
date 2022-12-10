@@ -39,7 +39,7 @@
   <properties>
     <revision>1.18</revision>
     <changelist>-SNAPSHOT</changelist>
-    <jenkins.version>2.332.1</jenkins.version>
+    <jenkins.version>2.346.1</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}</gitHubRepo>
     <mockito.version>3.12.4</mockito.version>
     <powermock.version>2.0.9</powermock.version>
@@ -49,7 +49,7 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.332.x</artifactId>
+        <artifactId>bom-2.346.x</artifactId>
         <version>1556.vfc6a_f216e3c6</version>
         <scope>import</scope>
         <type>pom</type>
@@ -76,7 +76,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>jobConfigHistory</artifactId>
-      <version>1139.v888b_656ca_f6d</version>
+      <version>1176.v1b_4290db_41a_5</version>
       <optional>true</optional>
     </dependency>
     <dependency>

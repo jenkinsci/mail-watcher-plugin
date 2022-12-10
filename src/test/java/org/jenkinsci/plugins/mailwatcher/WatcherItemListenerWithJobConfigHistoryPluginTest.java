@@ -92,7 +92,7 @@ public class WatcherItemListenerWithJobConfigHistoryPluginTest extends WatcherIt
     private void givenJobConfigHistoryPlugin() {
 
         final JobConfigHistory plugin = mock(JobConfigHistory.class);
-        when(mailer.plugin("jobConfigHistory")).thenReturn(plugin);
+        when(mailer.plugin(JobConfigHistory.class)).thenReturn(plugin);
 
         when(mailer.configHistory()).thenReturn(new ConfigHistory(plugin));
     }
