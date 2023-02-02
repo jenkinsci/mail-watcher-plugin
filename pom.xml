@@ -39,7 +39,7 @@
   <properties>
     <revision>1.18</revision>
     <changelist>-SNAPSHOT</changelist>
-    <jenkins.version>2.346.1</jenkins.version>
+    <jenkins.version>2.346.3</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}</gitHubRepo>
     <mockito.version>3.12.4</mockito.version>
     <powermock.version>2.0.9</powermock.version>
@@ -65,7 +65,7 @@
     <dependency>
       <groupId>org.jenkins-ci.main</groupId>
       <artifactId>maven-plugin</artifactId>
-      <version>3.19</version>
+      <version>3.20</version>
       <exclusions>
         <exclusion>
           <groupId>javax.annotation</groupId>
