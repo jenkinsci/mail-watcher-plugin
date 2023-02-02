@@ -23,7 +23,6 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
-import hudson.Plugin;
 import hudson.model.User;
 import hudson.plugins.jobConfigHistory.JobConfigHistory;
 import hudson.tasks.Mailer;
@@ -42,6 +41,7 @@ import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
+import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 
 import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
@@ -63,7 +63,7 @@ public class MailWatcherMailer {
 
         this.jenkins = jenkins;
         this.mailerDescriptor = jenkins.getDescriptorByType(Mailer.DescriptorImpl.class);
-        this.configHistory = new ConfigHistory((JobConfigHistory) plugin("jobConfigHistory"));
+        this.configHistory = new ConfigHistory(plugin(JobConfigHistory.class));
     }
 
     /*package*/ @Nonnull User getDefaultInitiator() {
@@ -75,9 +75,9 @@ public class MailWatcherMailer {
         ;
     }
 
-    /*package*/ @CheckForNull Plugin plugin(final String plugin) {
+    /*package*/ @CheckForNull <GC extends GlobalConfiguration> GC plugin(final @Nonnull Class<GC> clazz) {
 
-        return jenkins.getPlugin(plugin);
+        return GlobalConfiguration.all().get(clazz);
     }
 
     /*package*/ @Nonnull URL absoluteUrl(final @Nonnull String url) {
