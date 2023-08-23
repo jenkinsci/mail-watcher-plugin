@@ -39,16 +39,10 @@ import java.util.List;
 
 import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(JobConfigHistoryProjectAction.class)
 public class WatcherItemListenerWithJobConfigHistoryPluginTest extends WatcherItemListenerTest {
 
     private static final String RHS_TIMESTAMP = "1999-04-04_18:00:00";
@@ -99,7 +93,7 @@ public class WatcherItemListenerWithJobConfigHistoryPluginTest extends WatcherIt
 
     private void givenSomeHistory() throws IOException {
 
-        final JobConfigHistoryProjectAction action = PowerMockito.mock(
+        final JobConfigHistoryProjectAction action = Mockito.mock(
                 JobConfigHistoryProjectAction.class
         );
         when(jobStub.getAction(JobConfigHistoryProjectAction.class)).thenReturn(action);
@@ -107,7 +101,7 @@ public class WatcherItemListenerWithJobConfigHistoryPluginTest extends WatcherIt
         final List<ConfigInfo> configs = Arrays.asList(
                 config(LHS_TIMESTAMP), config(RHS_TIMESTAMP)
         );
-        PowerMockito.when(action.getJobConfigs()).thenReturn(configs);
+        Mockito.when(action.getJobConfigs()).thenReturn(configs);
     }
 
     private ConfigInfo config(final String date) {
