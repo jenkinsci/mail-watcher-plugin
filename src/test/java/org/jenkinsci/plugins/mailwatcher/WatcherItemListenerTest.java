@@ -43,15 +43,9 @@ import jakarta.mail.MessagingException;
 import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(AbstractItem.class)
 public class WatcherItemListenerTest {
 
     protected static final String INSTANCE_URL = "http://example.com/my-jenkins/";
@@ -85,7 +79,7 @@ public class WatcherItemListenerTest {
     @Test
     public void onRenamed() throws MessagingException {
 
-        PowerMockito.when(jobStub.getFullDisplayName()).thenReturn("newName");
+        Mockito.when(jobStub.getFullDisplayName()).thenReturn("newName");
 
         listener.onRenamed(jobStub, "oldName", "newName");
 
@@ -101,7 +95,7 @@ public class WatcherItemListenerTest {
     @Test
     public void onUpdated() throws MessagingException {
 
-        PowerMockito.when(jobStub.getFullDisplayName()).thenReturn("updated_job_name");
+        Mockito.when(jobStub.getFullDisplayName()).thenReturn("updated_job_name");
 
         listener.onUpdated(jobStub);
 
@@ -117,7 +111,7 @@ public class WatcherItemListenerTest {
     @Test
     public void onDeleted() throws MessagingException {
 
-        PowerMockito.when(jobStub.getFullDisplayName()).thenReturn("deleted_job_name");
+        Mockito.when(jobStub.getFullDisplayName()).thenReturn("deleted_job_name");
 
         listener.onDeleted(jobStub);
 
@@ -182,7 +176,7 @@ public class WatcherItemListenerTest {
 
     private Job<?, ?> getJobStub() {
 
-        final Job<?, ?> jobStub = PowerMockito.mock(Job.class);
+        final Job<?, ?> jobStub = Mockito.mock(Job.class);
 
         when(jobStub.getProperty(WatcherJobProperty.class))
             .thenReturn(new WatcherJobProperty("fake <recipient@list.com>"))

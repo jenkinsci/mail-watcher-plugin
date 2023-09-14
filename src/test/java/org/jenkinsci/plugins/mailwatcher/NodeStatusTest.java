@@ -26,11 +26,13 @@ package org.jenkinsci.plugins.mailwatcher;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import hudson.Functions;
 import hudson.Launcher;
 import hudson.maven.MavenModuleSet;
 import hudson.model.BuildListener;
@@ -203,6 +205,7 @@ public class NodeStatusTest {
 
     @Test @Issue("JENKINS-23496")
     public void doNotNotifySlaveAvailabilityWhenNotAwailable() throws Exception {
+        assumeFalse(Functions.isWindows());
         MailWatcherMailer mailer = mock(MailWatcherMailer.class);
         installAwailabilityListener(mailer);
 
