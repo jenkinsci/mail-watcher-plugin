@@ -23,6 +23,7 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
@@ -86,7 +87,7 @@ public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
             return MailWatcherMailer.validateMailAddresses(value);
         }
 
-        @Override
+        @Override @NonNull
         public String getDisplayName() {
 
             return "Notify when Job configuration changes";

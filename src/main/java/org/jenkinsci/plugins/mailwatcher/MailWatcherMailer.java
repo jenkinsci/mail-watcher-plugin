@@ -23,6 +23,8 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.User;
 import hudson.plugins.jobConfigHistory.JobConfigHistory;
 import hudson.tasks.Mailer;
@@ -32,8 +34,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Transport;
@@ -55,18 +55,18 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
  */
 public class MailWatcherMailer {
 
-    private final @Nonnull Mailer.DescriptorImpl mailerDescriptor;
-    private final @Nonnull Jenkins jenkins;
-    private final @Nonnull ConfigHistory configHistory;
+    private final @NonNull Mailer.DescriptorImpl mailerDescriptor;
+    private final @NonNull Jenkins jenkins;
+    private final @NonNull ConfigHistory configHistory;
 
-    /*package*/ MailWatcherMailer(final @Nonnull Jenkins jenkins) {
+    /*package*/ MailWatcherMailer(final @NonNull Jenkins jenkins) {
 
         this.jenkins = jenkins;
         this.mailerDescriptor = jenkins.getDescriptorByType(Mailer.DescriptorImpl.class);
         this.configHistory = new ConfigHistory(plugin(JobConfigHistory.class));
     }
 
-    /*package*/ @Nonnull User getDefaultInitiator() {
+    /*package*/ @NonNull User getDefaultInitiator() {
 
         final User current = User.current();
         return current != null
@@ -75,12 +75,13 @@ public class MailWatcherMailer {
         ;
     }
 
-    /*package*/ @CheckForNull <GC extends GlobalConfiguration> GC plugin(final @Nonnull Class<GC> clazz) {
+    /*package*/ @CheckForNull
+    <GC extends GlobalConfiguration> GC plugin(final @NonNull Class<GC> clazz) {
 
         return GlobalConfiguration.all().get(clazz);
     }
 
-    /*package*/ @Nonnull URL absoluteUrl(final @Nonnull String url) {
+    /*package*/ @NonNull URL absoluteUrl(final @NonNull String url) {
 
         try {
 
@@ -91,7 +92,7 @@ public class MailWatcherMailer {
         }
     }
 
-    /*package*/ @Nonnull ConfigHistory configHistory() {
+    /*package*/ @NonNull ConfigHistory configHistory() {
 
         return configHistory;
     }
