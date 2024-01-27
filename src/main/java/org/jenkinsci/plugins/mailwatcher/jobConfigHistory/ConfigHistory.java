@@ -23,6 +23,8 @@
  */
 package org.jenkinsci.plugins.mailwatcher.jobConfigHistory;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.Job;
 import hudson.plugins.jobConfigHistory.ConfigInfo;
 import hudson.plugins.jobConfigHistory.JobConfigHistory;
@@ -30,9 +32,6 @@ import hudson.plugins.jobConfigHistory.JobConfigHistoryProjectAction;
 
 import java.io.IOException;
 import java.util.List;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 
 /**
  * @author ogondza
@@ -46,7 +45,7 @@ public class ConfigHistory {
         this.plugin = plugin;
     }
 
-    public @CheckForNull String lastChangeDiffUrl(final @Nonnull Job<?, ?> job) {
+    public @CheckForNull String lastChangeDiffUrl(final @NonNull Job<?, ?> job) {
 
         if (plugin == null) return null;
 

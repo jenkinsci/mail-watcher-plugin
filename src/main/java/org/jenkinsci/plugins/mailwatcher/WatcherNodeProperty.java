@@ -23,6 +23,7 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Node;
 import hudson.slaves.NodeProperty;
@@ -103,7 +104,7 @@ public class WatcherNodeProperty extends NodeProperty<Node> {
             return MailWatcherMailer.validateMailAddresses(value);
         }
 
-        @Override
+        @Override @NonNull
         public String getDisplayName() {
 
             return "Notify when Node online status changes";

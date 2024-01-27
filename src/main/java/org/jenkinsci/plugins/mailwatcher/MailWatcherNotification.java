@@ -23,6 +23,7 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.User;
 
 import java.util.HashMap;
@@ -30,7 +31,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.Nonnull;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.MimeMessage;
@@ -135,7 +135,7 @@ public abstract class MailWatcherNotification {
         ;
     }
 
-    protected @Nonnull Map<String, String> pairs() {
+    protected @NonNull Map<String, String> pairs() {
 
         final Map<String, String> pairs = new HashMap<>(2);
         pairs.put("Url", this.getArtefactUrl());

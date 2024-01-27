@@ -23,6 +23,7 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Item;
@@ -32,8 +33,6 @@ import hudson.model.listeners.ItemListener;
 
 import java.util.Map;
 import java.util.Stack;
-
-import javax.annotation.Nonnull;
 
 import jenkins.model.Jenkins;
 
@@ -48,7 +47,7 @@ import jenkins.model.Jenkins;
 @Extension
 public class WatcherItemListener extends ItemListener {
 
-    private final @Nonnull MailWatcherMailer mailer;
+    private final @NonNull MailWatcherMailer mailer;
     private final String jenkinsRootUrl;
 
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
@@ -106,7 +105,7 @@ public class WatcherItemListener extends ItemListener {
 
     private static class Notification extends MailWatcherNotification {
 
-        private final @Nonnull Job<?, ?> job;
+        private final @NonNull Job<?, ?> job;
 
         public Notification(final Builder builder) {
 
@@ -121,7 +120,7 @@ public class WatcherItemListener extends ItemListener {
         }
 
         @Override
-        protected @Nonnull Map<String, String> pairs() {
+        protected @NonNull Map<String, String> pairs() {
             final Map<String, String> pairs = super.pairs();
 
             final String historyUrl = mailer.configHistory().lastChangeDiffUrl(job);
