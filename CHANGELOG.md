@@ -1,4 +1,10 @@
 ## Changelog
+| WARNING: Changelogs have been moved to [GitHub Releases](https://github.com/jenkinsci/mail-watcher-plugin/releases) |
+| --- |
+
+### Newer versions
+
+* See [GitHub Releases](https://github.com/jenkinsci/mail-watcher-plugin/releases)
 
 ### 1.12
 
