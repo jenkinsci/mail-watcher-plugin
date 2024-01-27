@@ -30,7 +30,6 @@ import hudson.plugins.jobConfigHistory.ConfigInfo;
 import hudson.plugins.jobConfigHistory.JobConfigHistory;
 import hudson.plugins.jobConfigHistory.JobConfigHistoryProjectAction;
 
-import java.io.IOException;
 import java.util.List;
 
 /**

@@ -34,6 +34,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
+import jenkins.model.JenkinsLocationConfiguration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,7 +74,8 @@ public class MailWatcherMailerTest {
     @Test
     public void testNullReplyTo() throws MessagingException {
         mailerDescriptor.setReplyToAddress(null);
-        mailerDescriptor.setAdminAddress("admin@example.com");
+        final JenkinsLocationConfiguration jenkinsLocationConfiguration = JenkinsLocationConfiguration.get();
+        jenkinsLocationConfiguration.setAdminAddress("admin@example.com");
 
         builder().subject("Message subject")
                 .recipients("notification@example.org")
@@ -90,7 +92,8 @@ public class MailWatcherMailerTest {
     @Test
     public void testEmptyReplyTo() throws MessagingException {
         mailerDescriptor.setReplyToAddress("");
-        mailerDescriptor.setAdminAddress("admin@example.com");
+        final JenkinsLocationConfiguration jenkinsLocationConfiguration = JenkinsLocationConfiguration.get();
+        jenkinsLocationConfiguration.setAdminAddress("admin@example.com");
 
         builder().subject("Message subject")
                 .recipients("notification@example.org")

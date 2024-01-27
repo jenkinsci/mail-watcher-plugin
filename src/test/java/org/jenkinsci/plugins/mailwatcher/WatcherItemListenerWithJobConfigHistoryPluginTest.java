@@ -40,7 +40,6 @@ import java.util.List;
 import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
 import org.junit.Before;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 public class WatcherItemListenerWithJobConfigHistoryPluginTest extends WatcherItemListenerTest {
@@ -74,13 +73,8 @@ public class WatcherItemListenerWithJobConfigHistoryPluginTest extends WatcherIt
 
     private void givenInstanceUrl(final String url) {
 
-        when(mailer.absoluteUrl(Mockito.anyString())).thenAnswer(new Answer<URL>() {
-
-            public URL answer(InvocationOnMock invocation) throws Throwable {
-
-                return new URL(url + invocation.getArguments()[0]);
-            }
-        });
+        when(mailer.absoluteUrl(Mockito.anyString())).thenAnswer(
+                (Answer<URL>) invocation -> new URL(url + invocation.getArguments()[0]));
     }
 
     private void givenJobConfigHistoryPlugin() {
