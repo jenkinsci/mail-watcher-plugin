@@ -44,6 +44,7 @@ import jakarta.mail.internet.MimeMessage;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 
+import jenkins.model.JenkinsLocationConfiguration;
 import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -115,7 +116,8 @@ public class MailWatcherMailer {
         if (recipients.length == 0) return null;
 
         final MimeMessage msg = new MimeMessage(mailerDescriptor.createSession());
-        msg.setFrom(new InternetAddress(mailerDescriptor.getAdminAddress()));
+        final JenkinsLocationConfiguration jenkinsLocationConfiguration = JenkinsLocationConfiguration.get();
+        msg.setFrom(new InternetAddress(jenkinsLocationConfiguration.getAdminAddress()));
         final String replyToAddress = mailerDescriptor.getReplyToAddress();
         if (replyToAddress != null) {
             msg.setReplyTo(InternetAddress.parse(replyToAddress));

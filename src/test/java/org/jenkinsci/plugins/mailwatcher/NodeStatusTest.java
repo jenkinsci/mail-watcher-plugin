@@ -51,8 +51,6 @@ import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.Shell;
 import hudson.util.OneShotEvent;
 
-import java.io.IOException;
-
 import jakarta.mail.MessagingException;
 
 import org.junit.Rule;

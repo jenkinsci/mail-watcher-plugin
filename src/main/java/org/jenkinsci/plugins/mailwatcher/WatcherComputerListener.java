@@ -23,6 +23,7 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.TaskListener;
@@ -81,7 +82,7 @@ public class WatcherComputerListener extends ComputerListener {
     }
 
     // @Override
-    public void onOffline(final Computer c, final OfflineCause cause) {
+    public void onOffline(@NonNull final Computer c, final OfflineCause cause) {
 
         if (cause == null) {
             onOffline(c);
