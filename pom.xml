@@ -69,7 +69,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>jobConfigHistory</artifactId>
-      <version>1277.vb_9a_0808495d7</version>
+      <version>1283.veb_dfb_00b_5ec0</version>
       <optional>true</optional>
     </dependency>
     <dependency>
