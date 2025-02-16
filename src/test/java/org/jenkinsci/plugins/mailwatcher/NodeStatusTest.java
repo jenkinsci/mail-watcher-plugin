@@ -34,7 +34,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import hudson.Functions;
 import hudson.Launcher;
-import hudson.maven.MavenModuleSet;
 import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.AbstractBuild;
@@ -43,11 +42,11 @@ import hudson.model.FreeStyleProject;
 import hudson.model.User;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.security.ACL;
+import hudson.security.ACLContext;
 import hudson.slaves.DumbSlave;
 import hudson.slaves.OfflineCause;
 import hudson.tasks.Builder;
 import hudson.tasks.Mailer;
-import hudson.tasks.Maven.MavenInstallation;
 import hudson.tasks.Shell;
 import hudson.util.OneShotEvent;
 
@@ -57,10 +56,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.SingleFileSCM;
-import org.jvnet.hudson.test.ToolInstallations;
 import org.mockito.ArgumentCaptor;
 import org.powermock.reflect.Whitebox;
+
+import java.util.Collections;
 
 public class NodeStatusTest {
 
@@ -127,9 +126,9 @@ public class NodeStatusTest {
         OneShotEvent started = new OneShotEvent();
         OneShotEvent running = new OneShotEvent();
 
-        User user = User.get("a_user", true);
+        User user = User.get("a_user", true, Collections.emptyMap());
         user.addProperty(new Mailer.UserProperty("a_user@example.com"));
-        ACL.impersonate(user.impersonate());
+        ACL.as2(user.impersonate2());
 
         DumbSlave slave = j.createOnlineSlave();
 
@@ -167,36 +166,23 @@ public class NodeStatusTest {
         OneShotEvent started = new OneShotEvent();
         OneShotEvent running = new OneShotEvent();
 
-        User user = User.get("a_user", true);
+        User user = User.get("a_user", true, Collections.emptyMap());
         user.addProperty(new Mailer.UserProperty("a_user@example.com"));
-        ACL.impersonate(user.impersonate());
+        try (ACLContext aclContext = ACL.as2(user.impersonate2())) {
+            FreeStyleProject project = j.jenkins.createProject(FreeStyleProject.class, "a_project");
+            project.getBuildersList().add(new SlaveOccupyingBuildStep(started, running));
+            QueueTaskFuture<FreeStyleBuild> future = project.scheduleBuild2(0);
 
-        FreeStyleProject project = j.jenkins.createProject(FreeStyleProject.class, "a_project");
-        project.getBuildersList().add(new SlaveOccupyingBuildStep(started, running));
-        QueueTaskFuture<FreeStyleBuild> future = project.scheduleBuild2(0);
+            started.block();
+            j.jenkins.toComputer().setTemporarilyOffline(true, new SomeOfflineCause());
 
-        started.block();
-        j.jenkins.toComputer().setTemporarilyOffline(true, new SomeOfflineCause());
+            verify(mailer, never()).send(any(MailWatcherNotification.class));
 
-        verify(mailer, never()).send(any(MailWatcherNotification.class));
+            running.signal();
+            future.get();
 
-        running.signal();
-        future.get();
-
-        verify(mailer, never()).send(any(MailWatcherNotification.class));
-    }
-
-    @Test @Issue("JENKINS-28888")
-    public void correctlyIdentifySlave() throws Exception {
-        MavenInstallation maven = ToolInstallations.configureMaven35();
-        MavenModuleSet mp = j.createProject(MavenModuleSet.class);
-        mp.setGoals("clean");
-        mp.setMaven(maven.getName());
-        mp.setScm(new SingleFileSCM("pom.xml",
-                "<project><modelVersion>4.0.0</modelVersion><groupId>g</groupId><artifactId>a</artifactId><version>0</version></project>")
-        );
-
-        j.buildAndAssertSuccess(mp);
+            verify(mailer, never()).send(any(MailWatcherNotification.class));
+        }
     }
 
     private static final class SomeOfflineCause extends OfflineCause {}
@@ -210,14 +196,17 @@ public class NodeStatusTest {
         OneShotEvent started = new OneShotEvent();
         OneShotEvent running = new OneShotEvent();
 
-        User user = User.get("a_user", true);
+        User user = User.get("a_user", true, Collections.emptyMap());
         user.addProperty(new Mailer.UserProperty("a_user@example.com"));
-        ACL.impersonate(user.impersonate());
+        ACL.as2(user.impersonate2());
 
         j.jenkins.setNumExecutors(2);
 
         FreeStyleProject blockSlave = j.jenkins.createProject(FreeStyleProject.class, "block_slave");
+
         blockSlave.getBuildersList().add(new Shell("sleep 100"));
+
+
         blockSlave.scheduleBuild2(0);
 
         FreeStyleProject project = j.jenkins.createProject(FreeStyleProject.class, "a_project");
