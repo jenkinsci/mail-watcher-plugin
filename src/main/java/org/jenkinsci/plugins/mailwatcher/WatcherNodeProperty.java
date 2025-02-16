@@ -33,7 +33,7 @@ import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * Configure list of email addresses as a property of a Node to be used for
@@ -79,7 +79,7 @@ public class WatcherNodeProperty extends NodeProperty<Node> {
 
         @Override
         public NodeProperty<?> newInstance(
-                final StaplerRequest req,
+                final StaplerRequest2 req,
                 final JSONObject formData
         ) throws FormException {
 

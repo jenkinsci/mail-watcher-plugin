@@ -38,7 +38,7 @@ import jenkins.model.Jenkins;
 
 /**
  * Notify whenever Job configuration changes.
- *
+ * <p>
  * Sends email to the list of recipients on following events: onRenamed,
  * onUpdated and onDeleted.
  *
@@ -158,8 +158,7 @@ public class WatcherItemListener extends ItemListener {
                 Stack<String> stack = new Stack<>();
                 stack.push(job.getShortUrl());
                 ItemGroup<?> parent = job.getParent();
-                while (parent != null && parent instanceof Item) {
-                    Item item = (Item) parent;
+                while (parent instanceof Item item) {
                     stack.push(item.getShortUrl());
                     parent = item.getParent();
                 }

@@ -31,6 +31,7 @@ import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 
 import org.junit.Test;
+import org.kohsuke.stapler.StaplerRequest2;
 
 public class WatcherNodePropertyTest {
 
@@ -149,6 +150,6 @@ public class WatcherNodePropertyTest {
         input.accumulate(WatcherNodeProperty.DescriptorImpl.ONLINE_ADDRESSES, online);
         input.accumulate(WatcherNodeProperty.DescriptorImpl.OFFLINE_ADDRESSES, offline);
 
-        return (WatcherNodeProperty) descriptor.newInstance(null, input);
+        return (WatcherNodeProperty) descriptor.newInstance((StaplerRequest2) null, input);
     }
 }
