@@ -38,7 +38,7 @@ import jenkins.model.Jenkins;
 
 /**
  * Notify whenever Computer marked online/offline.
- *
+ * <p>
  * Sends email do the list of recipients on following events: onOffline,
  * onOnline, onTemporarilyOffline and onTemporarilyOnline.
  *
@@ -189,10 +189,17 @@ public class WatcherComputerListener extends ComputerListener {
                 final Node node = computer.getNode();
                 if (node==null) return null;
 
-                final DescribableList<NodeProperty<?>, NodePropertyDescriptor> properties = (node instanceof Jenkins)
-                        ? ((Jenkins) node).getGlobalNodeProperties()
-                        : node.getNodeProperties()
-                ;
+                final DescribableList<NodeProperty<?>, NodePropertyDescriptor> properties;
+                if (node instanceof Jenkins) {
+                    DescribableList<NodeProperty<?>, NodePropertyDescriptor> properties1 = ((Jenkins) node).getGlobalNodeProperties();
+                    if (properties1 == null || properties1.isEmpty()) {
+                        properties = node.getNodeProperties();
+                    }
+                    else {
+                        properties = properties1;
+                    }
+                }
+                else properties = node.getNodeProperties();
 
                 return properties.get(WatcherNodeProperty.class);
             }
