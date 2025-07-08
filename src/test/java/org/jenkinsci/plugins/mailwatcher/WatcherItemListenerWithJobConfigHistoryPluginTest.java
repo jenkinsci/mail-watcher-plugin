@@ -23,47 +23,44 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.startsWith;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import hudson.plugins.jobConfigHistory.ConfigInfo;
 import hudson.plugins.jobConfigHistory.JobConfigHistory;
 import hudson.plugins.jobConfigHistory.JobConfigHistoryProjectAction;
+import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
-import org.junit.Before;
-import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.startsWith;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public class WatcherItemListenerWithJobConfigHistoryPluginTest extends WatcherItemListenerTest {
+class WatcherItemListenerWithJobConfigHistoryPluginTest extends WatcherItemListenerTest {
 
     private static final String RHS_TIMESTAMP = "1999-04-04_18:00:00";
     private static final String LHS_TIMESTAMP = "1999-03-28_18:00:00";
 
     private static final String CONFIG_HISTORY_URL = String.format(
             "jobConfigHistory/showDiffFiles?timestamp1=%s&timestamp2=%s",
-            RHS_TIMESTAMP, LHS_TIMESTAMP
-    );
+            RHS_TIMESTAMP, LHS_TIMESTAMP);
 
     @Override
     protected void checkBody() {
-
         super.checkBody();
         String change = notification.pairs().get("Change");
         assertThat(change, startsWith(INSTANCE_URL));
         assertThat(change, endsWith(CONFIG_HISTORY_URL));
     }
 
-    @Override @Before
-    public void setUp() throws Exception {
-
+    @Override
+    @BeforeEach
+    void setUp() {
         super.setUp();
 
         givenInstanceUrl(INSTANCE_URL);
@@ -72,34 +69,27 @@ public class WatcherItemListenerWithJobConfigHistoryPluginTest extends WatcherIt
     }
 
     private void givenInstanceUrl(final String url) {
-
         when(mailer.absoluteUrl(Mockito.anyString())).thenAnswer(
                 (Answer<URL>) invocation -> new URL(url + invocation.getArguments()[0]));
     }
 
     private void givenJobConfigHistoryPlugin() {
-
         final JobConfigHistory plugin = mock(JobConfigHistory.class);
         when(mailer.plugin(JobConfigHistory.class)).thenReturn(plugin);
 
         when(mailer.configHistory()).thenReturn(new ConfigHistory(plugin));
     }
 
-    private void givenSomeHistory() throws IOException {
-
-        final JobConfigHistoryProjectAction action = Mockito.mock(
-                JobConfigHistoryProjectAction.class
-        );
+    private void givenSomeHistory() {
+        final JobConfigHistoryProjectAction action = Mockito.mock(JobConfigHistoryProjectAction.class);
         when(jobStub.getAction(JobConfigHistoryProjectAction.class)).thenReturn(action);
 
         final List<ConfigInfo> configs = Arrays.asList(
-                config(LHS_TIMESTAMP), config(RHS_TIMESTAMP)
-        );
-        Mockito.when(action.getJobConfigs()).thenReturn(configs);
+                config(LHS_TIMESTAMP), config(RHS_TIMESTAMP));
+        when(action.getJobConfigs()).thenReturn(configs);
     }
 
     private ConfigInfo config(final String date) {
-
         final ConfigInfo config = mock(ConfigInfo.class);
         when(config.getDate()).thenReturn(date);
         return config;
