@@ -64,7 +64,8 @@ public class MailWatcherMailer {
 
         this.jenkins = jenkins;
         this.mailerDescriptor = jenkins.getDescriptorByType(Mailer.DescriptorImpl.class);
-        this.configHistory = new ConfigHistory(plugin(JobConfigHistory.class));
+        var p = jenkins.pluginManager.getPlugin("jobConfigHistory");
+        this.configHistory = new ConfigHistory(p != null && p.isActive() ? plugin(JobConfigHistory.class) : null);
     }
 
     /*package*/ @NonNull User getDefaultInitiator() {
