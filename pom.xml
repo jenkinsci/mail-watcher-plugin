@@ -61,7 +61,6 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>jobConfigHistory</artifactId>
-      <version>1305.vf20a_356586b_8</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -72,7 +71,6 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>jakarta-mail-api</artifactId>
-      <version>2.1.3-2</version>
     </dependency>
 
     <dependency>
