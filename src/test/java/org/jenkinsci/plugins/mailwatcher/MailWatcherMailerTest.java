@@ -23,47 +23,57 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import hudson.tasks.Mailer;
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-
 import jenkins.model.JenkinsLocationConfiguration;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
-import org.powermock.reflect.Whitebox;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-public class MailWatcherMailerTest {
+import java.lang.reflect.Field;
 
-    @Rule public JenkinsRule j = new JenkinsRule();
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Answers.CALLS_REAL_METHODS;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+@WithJenkins
+@ExtendWith(MockitoExtension.class)
+class MailWatcherMailerTest {
+
+    @Mock(answer = CALLS_REAL_METHODS)
     private MailWatcherMailer mailer;
     private Mailer.DescriptorImpl mailerDescriptor;
 
-    @Before
-    public void setUp() {
-        mailer = mock(MailWatcherMailer.class, CALLS_REAL_METHODS);
+    private JenkinsRule j;
+
+    @BeforeEach
+    void setUp(JenkinsRule rule) throws Exception {
+        j = rule;
+
         mailerDescriptor = j.jenkins.getDescriptorByType(Mailer.DescriptorImpl.class);
-        Whitebox.setInternalState(mailer, "mailerDescriptor", mailerDescriptor);
+
+        Field field = mailer.getClass().getDeclaredField("mailerDescriptor");
+        field.setAccessible(true);
+        field.set(mailer, mailerDescriptor);
     }
 
     @Test
-    public void test() throws MessagingException {
+    void test() throws Exception {
         mailerDescriptor.setReplyToAddress("reply-to@example.com");
 
         builder().subject("Message subject")
                 .recipients("notification@example.org")
-                .send(null)
-        ;
+                .send(null);
 
         MimeMessage msg = sentMessage();
         assertEquals("mail-watcher-plugin: Message subject", msg.getSubject());
@@ -72,15 +82,14 @@ public class MailWatcherMailerTest {
     }
 
     @Test
-    public void testNullReplyTo() throws MessagingException {
+    void testNullReplyTo() throws Exception {
         mailerDescriptor.setReplyToAddress(null);
         final JenkinsLocationConfiguration jenkinsLocationConfiguration = JenkinsLocationConfiguration.get();
         jenkinsLocationConfiguration.setAdminAddress("admin@example.com");
 
         builder().subject("Message subject")
                 .recipients("notification@example.org")
-                .send(null)
-        ;
+                .send(null);
 
         MimeMessage msg = sentMessage();
         assertEquals("mail-watcher-plugin: Message subject", msg.getSubject());
@@ -90,15 +99,14 @@ public class MailWatcherMailerTest {
     }
 
     @Test
-    public void testEmptyReplyTo() throws MessagingException {
+    void testEmptyReplyTo() throws Exception {
         mailerDescriptor.setReplyToAddress("");
         final JenkinsLocationConfiguration jenkinsLocationConfiguration = JenkinsLocationConfiguration.get();
         jenkinsLocationConfiguration.setAdminAddress("admin@example.com");
 
         builder().subject("Message subject")
                 .recipients("notification@example.org")
-                .send(null)
-        ;
+                .send(null);
 
         MimeMessage msg = sentMessage();
         assertEquals("mail-watcher-plugin: Message subject", msg.getSubject());
@@ -108,28 +116,27 @@ public class MailWatcherMailerTest {
     }
 
     @Test
-    public void emptyRecipients() throws MessagingException {
+    void emptyRecipients() throws Exception {
         builder().subject("Message subject")
                 .recipients("")
-                .send(null)
-        ;
-        verify(mailer, Mockito.never()).send(Mockito.any(MimeMessage.class));
+                .send(null);
+        verify(mailer, never()).send(any(MimeMessage.class));
     }
 
     @Test
-    public void nullRecipients() throws MessagingException {
+    void nullRecipients() throws Exception {
         builder().subject("Message subject")
                 .recipients(null)
-                .send(null)
-        ;
-        verify(mailer, Mockito.never()).send(Mockito.any(MimeMessage.class));
+                .send(null);
+        verify(mailer, never()).send(any(MimeMessage.class));
     }
 
     private MailWatcherNotification.Builder builder() {
         return new MailWatcherNotification.Builder(mailer, "example.org") {
             @Override
             public void send(Object object) {
-                new MailWatcherNotification(this) {}.send();
+                new MailWatcherNotification(this) {
+                }.send();
             }
         };
     }

@@ -23,55 +23,56 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import hudson.model.Computer;
 import hudson.model.Node;
 import hudson.model.User;
+import hudson.slaves.NodeDescriptor;
 import hudson.slaves.NodeProperty;
 import hudson.slaves.NodePropertyDescriptor;
-import hudson.slaves.NodeDescriptor;
 import hudson.slaves.OfflineCause;
 import hudson.util.DescribableList;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 
-import jakarta.mail.MessagingException;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-
-public class WatcherComputerListenerTest {
+@ExtendWith(MockitoExtension.class)
+class WatcherComputerListenerTest {
 
     private static final String FAKE_COMPUTER_URL = "http://example.com/my-jenkins/fake/computer/url";
     private static final String FAKE_INITIATOR = "someone@example.com";
 
-    final private NodeDescriptor desc = mock(NodeDescriptor.class);
+    @Mock
+    private NodeDescriptor desc;
 
-    final private MailWatcherMailer mailer = mock(MailWatcherMailer.class);
+    @Mock
+    private MailWatcherMailer mailer;
 
-    final private WatcherComputerListener listener = new WatcherComputerListener(
-            mailer,
-            "http://example.com/my-jenkins/"
-    );
+    private WatcherComputerListener listener;
 
-    @Before
-    public void setUp() {
-
+    @BeforeEach
+    void setUp() {
         final User initiator = mock(User.class);
         when(initiator.getId()).thenReturn(FAKE_INITIATOR);
         when(mailer.getDefaultInitiator()).thenReturn(initiator);
+
+        listener = new WatcherComputerListener(mailer, "http://example.com/my-jenkins/");
     }
 
     @Test
-    public void onOffline() throws MessagingException {
-
+    void onOffline() throws Exception {
         listener.onOffline(getComputerStub());
 
         final MailWatcherNotification notification = captureNotification();
@@ -84,8 +85,7 @@ public class WatcherComputerListenerTest {
     }
 
     @Test
-    public void onOnline() throws MessagingException {
-
+    void onOnline() throws Exception {
         listener.onOnline(getComputerStub(), null);
 
         final MailWatcherNotification notification = captureNotification();
@@ -98,8 +98,7 @@ public class WatcherComputerListenerTest {
     }
 
     @Test
-    public void onTemporarilyOffline() throws MessagingException {
-
+    void onTemporarilyOffline() throws Exception {
         final OfflineCause cause = mock(OfflineCause.class);
         when(cause.toString()).thenReturn("Mocked cause");
 
@@ -116,8 +115,7 @@ public class WatcherComputerListenerTest {
     }
 
     @Test
-    public void onTemporarilyOnline() throws MessagingException {
-
+    void onTemporarilyOnline() throws Exception {
         listener.onTemporarilyOnline(getComputerStub());
 
         final MailWatcherNotification notification = captureNotification();
@@ -130,7 +128,6 @@ public class WatcherComputerListenerTest {
     }
 
     private Computer getComputerStub() {
-
         final Computer computerStub = mock(Computer.class);
         final Node nodeStub = getNodeStub();
 
@@ -142,32 +139,22 @@ public class WatcherComputerListenerTest {
     }
 
     private Node getNodeStub() {
-
         final Node nodeStub = mock(Node.class);
 
         final WatcherNodeProperty property = new WatcherNodeProperty(
-                "online <recipient@list.com>", "offline <recipient@list.com>"
-        );
+                "online <recipient@list.com>", "offline <recipient@list.com>");
 
         when(nodeStub.getNodeProperties()).thenReturn(getPropertiesList(property));
 
         return nodeStub;
     }
 
-    private DescribableList<NodeProperty<?>, NodePropertyDescriptor> getPropertiesList (
-            final NodeProperty<Node>... properties
-    ) {
-
-        return new DescribableList<>(
-                desc, Arrays.asList(properties)
-        );
+    private DescribableList<NodeProperty<?>, NodePropertyDescriptor> getPropertiesList(final NodeProperty<Node>... properties) {
+        return new DescribableList<>(desc, Arrays.asList(properties));
     }
 
-    private MailWatcherNotification captureNotification() throws MessagingException {
-
-        ArgumentCaptor<MailWatcherNotification> argument = ArgumentCaptor
-                .forClass(MailWatcherNotification.class)
-        ;
+    private MailWatcherNotification captureNotification() throws Exception {
+        ArgumentCaptor<MailWatcherNotification> argument = ArgumentCaptor.forClass(MailWatcherNotification.class);
 
         verify(mailer).send(argument.capture());
 
@@ -175,7 +162,6 @@ public class WatcherComputerListenerTest {
     }
 
     private void checkBody(final MailWatcherNotification notification) {
-
         assertThat(notification.getMailBody(), containsString(FAKE_COMPUTER_URL));
         assertThat(notification.getMailBody(), containsString(FAKE_INITIATOR));
     }
