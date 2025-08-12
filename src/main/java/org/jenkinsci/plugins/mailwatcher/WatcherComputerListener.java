@@ -24,7 +24,6 @@
 package org.jenkinsci.plugins.mailwatcher;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.TaskListener;
 import hudson.model.Computer;
@@ -50,7 +49,6 @@ public class WatcherComputerListener extends ComputerListener {
     private final MailWatcherMailer mailer;
     private final String jenkinsRootUrl;
 
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public WatcherComputerListener() {
 
         this(

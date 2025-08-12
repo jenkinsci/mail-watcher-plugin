@@ -24,7 +24,6 @@
 package org.jenkinsci.plugins.mailwatcher;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.AbstractBuild;
 import hudson.model.Computer;
@@ -55,7 +54,6 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
     private final MailWatcherMailer mailer;
     private final String jenkinsRootUrl;
 
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public NodeAwailabilityListener() {
 
         this(
