@@ -23,62 +23,66 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import hudson.model.Item;
+import hudson.model.Job;
+import hudson.model.User;
+import jakarta.mail.MessagingException;
+import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import hudson.model.Item;
-import hudson.model.Job;
-import hudson.model.User;
 
-import jakarta.mail.MessagingException;
-
-import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
-
-public class WatcherItemListenerTest {
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+class WatcherItemListenerTest {
 
     protected static final String INSTANCE_URL = "http://example.com/my-jenkins/";
     private static final String FAKE_JOB_URL = "fake/job/url";
     private static final String FAKE_INITIATOR = "someone@example.com";
 
+    @Mock
     protected MailWatcherMailer mailer;
     protected MailWatcherNotification notification;
+    @Mock
     private ConfigHistory configHistory;
 
     private WatcherItemListener listener;
 
     protected Job<?, ?> jobStub;
 
-    @Before
-    public void setUp() throws Exception {
-
-        mailer = mock(MailWatcherMailer.class);
+    @BeforeEach
+    void setUp() {
         listener = new WatcherItemListener(mailer, INSTANCE_URL);
 
         final User initiator = mock(User.class);
         when(initiator.getId()).thenReturn(FAKE_INITIATOR);
         when(mailer.getDefaultInitiator()).thenReturn(initiator);
 
-        configHistory = mock(ConfigHistory.class);
         when(mailer.configHistory()).thenReturn(configHistory);
 
         jobStub = getJobStub();
     }
 
     @Test
-    public void onRenamed() throws MessagingException {
-
-        Mockito.when(jobStub.getFullDisplayName()).thenReturn("newName");
+    void onRenamed() throws MessagingException {
+        when(jobStub.getFullDisplayName()).thenReturn("newName");
 
         listener.onRenamed(jobStub, "oldName", "newName");
 
@@ -92,9 +96,8 @@ public class WatcherItemListenerTest {
     }
 
     @Test
-    public void onUpdated() throws MessagingException {
-
-        Mockito.when(jobStub.getFullDisplayName()).thenReturn("updated_job_name");
+    void onUpdated() throws MessagingException {
+        when(jobStub.getFullDisplayName()).thenReturn("updated_job_name");
 
         listener.onUpdated(jobStub);
 
@@ -108,9 +111,8 @@ public class WatcherItemListenerTest {
     }
 
     @Test
-    public void onDeleted() throws MessagingException {
-
-        Mockito.when(jobStub.getFullDisplayName()).thenReturn("deleted_job_name");
+    void onDeleted() throws MessagingException {
+        when(jobStub.getFullDisplayName()).thenReturn("deleted_job_name");
 
         listener.onDeleted(jobStub);
 
@@ -124,25 +126,19 @@ public class WatcherItemListenerTest {
     }
 
     @Test
-    public void ignoreItemsThatAreNotJobs() throws MessagingException {
-
+    void ignoreItemsThatAreNotJobs() throws MessagingException {
         final Item itemStub = mock(Item.class);
 
         listener.onRenamed(itemStub, "oldName", "newName");
         listener.onUpdated(itemStub);
         listener.onDeleted(itemStub);
 
-        verify(mailer, never())
-                .send(any(MailWatcherNotification.class))
-        ;
+        verify(mailer, never()).send(any(MailWatcherNotification.class));
     }
 
     @Test
-    public void doNothingIfThereAreNoRecipientsDeleted() throws MessagingException {
-
-        when(jobStub.getProperty(WatcherJobProperty.class))
-                .thenReturn(null)
-        ;
+    void doNothingIfThereAreNoRecipientsDeleted() throws MessagingException {
+        when(jobStub.getProperty(WatcherJobProperty.class)).thenReturn(null);
 
         listener.onDeleted(jobStub);
         assertFalse(captureNotification().shouldNotify());
@@ -150,11 +146,8 @@ public class WatcherItemListenerTest {
     }
 
     @Test
-    public void doNothingIfThereAreNoRecipientsRenamed() throws MessagingException {
-
-        when(jobStub.getProperty(WatcherJobProperty.class))
-                .thenReturn(null)
-        ;
+    void doNothingIfThereAreNoRecipientsRenamed() throws MessagingException {
+        when(jobStub.getProperty(WatcherJobProperty.class)).thenReturn(null);
 
         listener.onRenamed(jobStub, "oldName", "newName");
         assertFalse(captureNotification().shouldNotify());
@@ -162,11 +155,8 @@ public class WatcherItemListenerTest {
     }
 
     @Test
-    public void doNothingIfThereAreNoRecipientsUpdated() throws MessagingException {
-
-        when(jobStub.getProperty(WatcherJobProperty.class))
-                .thenReturn(null)
-        ;
+    void doNothingIfThereAreNoRecipientsUpdated() throws MessagingException {
+        when(jobStub.getProperty(WatcherJobProperty.class)).thenReturn(null);
 
         listener.onUpdated(jobStub);
         assertFalse(captureNotification().shouldNotify());
@@ -174,12 +164,10 @@ public class WatcherItemListenerTest {
     }
 
     private Job<?, ?> getJobStub() {
-
         final Job<?, ?> jobStub = Mockito.mock(Job.class);
 
         when(jobStub.getProperty(WatcherJobProperty.class))
-            .thenReturn(new WatcherJobProperty("fake <recipient@list.com>"))
-        ;
+                .thenReturn(new WatcherJobProperty("fake <recipient@list.com>"));
 
         when(jobStub.getShortUrl()).thenReturn("fake/job/url");
 
@@ -187,10 +175,7 @@ public class WatcherItemListenerTest {
     }
 
     private MailWatcherNotification captureNotification() throws MessagingException {
-
-        ArgumentCaptor<MailWatcherNotification> argument = ArgumentCaptor
-                .forClass(MailWatcherNotification.class)
-        ;
+        ArgumentCaptor<MailWatcherNotification> argument = ArgumentCaptor.forClass(MailWatcherNotification.class);
 
         verify(mailer).send(argument.capture());
 
@@ -198,7 +183,6 @@ public class WatcherItemListenerTest {
     }
 
     protected void checkBody() {
-
         assertThat(notification.getMailBody(), containsString(INSTANCE_URL + FAKE_JOB_URL));
         assertThat(notification.getMailBody(), containsString(FAKE_INITIATOR));
     }

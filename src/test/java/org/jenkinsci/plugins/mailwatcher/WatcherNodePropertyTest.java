@@ -23,96 +23,78 @@
  */
 package org.jenkinsci.plugins.mailwatcher;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import hudson.model.Descriptor.FormException;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.kohsuke.stapler.StaplerRequest2;
 
-public class WatcherNodePropertyTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+class WatcherNodePropertyTest {
 
     private static final String OFFLINE = "offline <ogondza@redhat.com>";
     private static final String ONLINE = "online <ogondza@redhat.com>";
-    private WatcherNodeProperty.DescriptorImpl descriptor =
-            new WatcherNodeProperty.DescriptorImpl()
-   ;
+    private final WatcherNodeProperty.DescriptorImpl descriptor = new WatcherNodeProperty.DescriptorImpl();
 
     @Test
-    public void validAddressProvided() {
+    void validAddressProvided() {
+        assertEquals(
+                FormValidation.ok(),
+                descriptor.doCheckOnlineAddresses("an address <an.address@mail.com>"));
 
         assertEquals(
                 FormValidation.ok(),
-                descriptor.doCheckOnlineAddresses("an address <an.address@mail.com>")
-        );
-
-        assertEquals(
-                FormValidation.ok(),
-                descriptor.doCheckOfflineAddresses("an address <an.address@mail.com>")
-        );
+                descriptor.doCheckOfflineAddresses("an address <an.address@mail.com>"));
     }
 
     @Test
-    public void noAddressProvided() {
-
+    void noAddressProvided() {
         final String expected = FormValidation
                 .warning("Empty address list provided")
-                .toString()
-        ;
+                .toString();
 
         assertEquals(
                 expected,
-                descriptor.doCheckOnlineAddresses("").toString()
-        );
+                descriptor.doCheckOnlineAddresses("").toString());
 
         assertEquals(
                 expected,
-                descriptor.doCheckOfflineAddresses("").toString()
-        );
+                descriptor.doCheckOfflineAddresses("").toString());
     }
 
     @Test
-    public void invalidAddressProvided() {
-
+    void invalidAddressProvided() {
         final String expected = FormValidation
                 .error("not.an.address does not look like an email address")
-                .toString()
-        ;
+                .toString();
 
         assertEquals(
                 expected,
-                descriptor.doCheckOnlineAddresses("not.an.address").toString()
-        );
+                descriptor.doCheckOnlineAddresses("not.an.address").toString());
 
         assertEquals(
                 expected,
-                descriptor.doCheckOfflineAddresses("not.an.address").toString()
-        );
+                descriptor.doCheckOfflineAddresses("not.an.address").toString());
     }
 
     @Test
-    public void notAnAddressProvided() {
-
+    void notAnAddressProvided() {
         final String addressCandidate = "a@b.c, ASDF@#$%^&*(), \"name surname\" <name.surname@mail.com>";
         final String expectedMessage = "Invalid address provided: Domain contains illegal character";
 
         assertEquals(
                 FormValidation.error(expectedMessage).toString(),
-                descriptor.doCheckOnlineAddresses(addressCandidate).toString()
-        );
+                descriptor.doCheckOnlineAddresses(addressCandidate).toString());
 
         assertEquals(
                 FormValidation.error(expectedMessage).toString(),
-                descriptor.doCheckOfflineAddresses(addressCandidate).toString()
-        );
+                descriptor.doCheckOfflineAddresses(addressCandidate).toString());
     }
 
     @Test
-    public void instantiateUsingBothAddresses() throws FormException {
-
+    void instantiateUsingBothAddresses() throws FormException {
         final WatcherNodeProperty prop = getInstanceFor(ONLINE, OFFLINE);
 
         assertEquals(ONLINE, prop.getOnlineAddresses());
@@ -120,8 +102,7 @@ public class WatcherNodePropertyTest {
     }
 
     @Test
-    public void instantiateUsingOnlineAddress() throws FormException {
-
+    void instantiateUsingOnlineAddress() throws FormException {
         WatcherNodeProperty prop = getInstanceFor(ONLINE, "");
 
         assertEquals(ONLINE, prop.getOnlineAddresses());
@@ -129,8 +110,7 @@ public class WatcherNodePropertyTest {
     }
 
     @Test
-    public void instantiateUsingOfflineAddress() throws FormException {
-
+    void instantiateUsingOfflineAddress() throws FormException {
         WatcherNodeProperty prop = getInstanceFor("", OFFLINE);
 
         assertEquals("", prop.getOnlineAddresses());
@@ -138,13 +118,11 @@ public class WatcherNodePropertyTest {
     }
 
     @Test
-    public void doNotInstantiateWithoutAnyAddress() throws FormException {
-
+    void doNotInstantiateWithoutAnyAddress() throws FormException {
         assertNull(getInstanceFor("", ""));
     }
 
     private WatcherNodeProperty getInstanceFor(final String online, final String offline) throws FormException {
-
         final JSONObject input = new JSONObject();
 
         input.accumulate(WatcherNodeProperty.DescriptorImpl.ONLINE_ADDRESSES, online);
