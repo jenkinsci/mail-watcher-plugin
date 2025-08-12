@@ -81,7 +81,7 @@ public class WatcherComputerListener extends ComputerListener {
         ;
     }
 
-    // @Override
+    @Override
     public void onOffline(@NonNull final Computer c, final OfflineCause cause) {
 
         if (cause == null) {

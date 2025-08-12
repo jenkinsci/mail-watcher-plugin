@@ -60,7 +60,7 @@ public class WatcherItemListener extends ItemListener {
     }
 
     public WatcherItemListener(
-            final MailWatcherMailer mailer,
+            @NonNull final MailWatcherMailer mailer,
             final String jenkinsRootUrl
     ) {
 
