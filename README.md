@@ -1,6 +1,6 @@
 # Mail Watcher
 
-[![Build Status](https://ci.jenkins.io/job/Plugins/job/mail-watcher-plugin/job/master/badge/icon)](https://ci.jenkins.io/job/Plugins/job/mail-watcher-plugin/job/master/)
+[![Build Status](https://ci.jenkins.io/buildStatus/icon?job=Plugins%2Fmail-watcher-plugin%2Fmaster)](https://ci.jenkins.io/job/Plugins/job/mail-watcher-plugin/job/master/)
 [![GitHub release](https://img.shields.io/github/v/release/jenkinsci/mail-watcher-plugin.svg?label=release)](https://github.com/jenkinsci/mail-watcher-plugin/releases/latest)
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/mail-watcher-plugin.svg?color=blue)](https://plugins.jenkins.io/mail-watcher-plugin/)
 
