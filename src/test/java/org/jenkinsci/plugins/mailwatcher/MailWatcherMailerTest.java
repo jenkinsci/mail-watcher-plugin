@@ -31,6 +31,8 @@ import jenkins.model.JenkinsLocationConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.mockito.ArgumentCaptor;
@@ -48,6 +50,7 @@ import static org.mockito.Mockito.verify;
 
 @WithJenkins
 @ExtendWith(MockitoExtension.class)
+@Execution(ExecutionMode.SAME_THREAD)
 class MailWatcherMailerTest {
 
     @Mock(answer = CALLS_REAL_METHODS)
