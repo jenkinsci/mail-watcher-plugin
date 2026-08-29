@@ -73,9 +73,7 @@ public class WatcherItemListener extends ItemListener {
     @Override
     public void onRenamed(Item item, String oldName, String newName) {
 
-        if (!(item instanceof Job<?, ?>)) return;
-
-        final Job<?, ?> job = (Job<?, ?>) item;
+        if (!(item instanceof Job<?, ?> job)) return;
 
         getNotification().subject("renamed from " + oldName).send(job);
     }
